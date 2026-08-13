@@ -169,7 +169,7 @@
         if (config) return config;
         return [
             { label: "Описание", type: "dialog", action: "info" },
-            { label: "Поиграть", type: "redirect", url: `../../pages/instruments/${objectName}.html` }
+            { label: "Поиграть", type: "redirect", url: `instruments/${objectName}.html` }
         ];
     }
 

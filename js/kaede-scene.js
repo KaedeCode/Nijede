@@ -150,12 +150,12 @@
         "kaede_piano": [
             { label: "Описания", type: "dialog", action: "info" },
             { label: "История", type: "dialog", action: "detail" },
-            { label: "Поиграть", type: "redirect", url: "/Nijede/pages/instruments/piano.html" }
+            { label: "Поиграть", type: "redirect", url: "instruments/piano.html" }
         ],
         "kaede_syntesier": [
             { label: "Описания", type: "dialog", action: "info" },
             { label: "История", type: "dialog", action: "detail" },
-            { label: "Поиграть", type: "redirect", url: "/Nijede/pages/instruments/synthesizer.html" }
+            { label: "Поиграть", type: "redirect", url: "instruments/synthesizer.html" }
         ],
         "kaede_laptop": [
             { label: "Описания", type: "dialog", action: "info" },
