@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Синтезатор</title>
+    <link rel="stylesheet" href="audioK.css">
+    <link rel="icon" href="../../assets/images/logo.png" type="image/png">
+    <script src="js/audio.js"></script>
+</head>
+<body>
+    <h1 align="center">СИНТЕЗАТОР</h1>
+
+    <button id="exit" onclick="window.location.href = '../kaede.html'">Выход</button>
+
+    <!--
+    <select onchange="mode = this">
+        <option value="sawWave">Saw Wave</option>
+        <option value="fx5">FX 5 (brightness)</option>
+        <option value="organ">Organ</option>
+        <option value="lead1">Lead 1 (square)</option>
+        <option value="fx5">Synth Strings 1</option>
+        <option value="vibraphone">Vibraphone</option>
+        <option value="marimba">Marimba</option>
+    </select>-->
+
+    <div id="note-menu" class="note-popup">
+        <button onclick="noteMenuSplit()">Разделить(S)</button>
+        <button onclick="noteMenuMerge()">Соединить(W)</button>
+        <button onclick="addNoteForKey()">Добавить(A)</button>
+        <button onclick="delNoteFromKey()">Удалить(D)</button>
+        <button onclick="CDTie()">С/У лигу</button>
+    </div>
+    <div id="bar-menu" class="bar-popup">
+        <button onclick="duplicateBar()">Дублировать(E)</button>
+        <button onclick="deleteBar()">Удалить(R)</button>
+        <button onclick="rightBar()">Вправо</button>
+        <button onclick="leftBar()">Влево</button>
+        <button onclick="startOfRepeat()">Начало репризыt</button>
+        <button onclick="endOfRepeat()">Конец репризы</button>
+    </div>
+    <div id="countRepeats" class="bar-popup" style="display: none;">
+        <label for="repeatCount">Количество повторений (мин. 2):</label>
+        <input type="number" id="repeatCount" min="2" value="2">
+        <button onclick="confirmRepeat()">Подтвердить</button>
+        <button onclick="cancelRepeat()">Отмена</button>
+    </div>
+
+    <div class="piano-container" id="piano">
+        <div class="switch-wrapper">
+            <label class="switch">
+                <input type="checkbox" id="check">
+                <span class="slider"></span>
+            </label>
+            <span class="switch-label">LET RING</span>
+        </div>
+    </div>
+
+    <br>
+    <button onclick="play()" id="BPlay"><img src="images/play.png" width="100%" id="imgBPlay"></button>
+    <br>
+    <input type="text" id="tempo" placeholder="Tempo" min="10" max="300"><br>
+    <div id="staff">
+        <div class="time-signature">
+            <span onclick="sigTop(this)">&nbsp;4</span>
+            <br>---<br>
+            <span onclick="sigBottom(this)">&nbsp;4</span>
+        </div>
+        <button onclick="addBar()" id="BAddBar">Добавить<br>такт(T)</button>
+    </div>
+
+    <script>
+        //var mode = "sawWave";
+
+        createPiano("synthesizer", 2, 7, document.getElementById("piano"), document.getElementById('note-menu'), document.getElementById('bar-menu'));
+    </script>
+</body>
+</html>

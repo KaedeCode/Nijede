@@ -1,0 +1,12 @@
+# Blender 5.1.1 MTL File: 'nijroom (2).blend'
+# www.blender.org
+
+newmtl object_0.007
+Ns 9.849158
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd textures/RGB_7fc780c497664952a2be43f132af46e8_T_Rickenbaker_BaseColor-tga.png

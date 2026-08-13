@@ -1,0 +1,46 @@
+# Blender 5.1.1 MTL File: 'nijroom (2).blend'
+# www.blender.org
+
+newmtl chrome.001
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd textures/drum_kit_diffuse.jpg
+map_Bump -bm 0.300000 textures/drum_kit_normal.jpg
+
+newmtl cymbal.001
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd textures/drum_kit_diffuse.jpg
+map_Bump -bm 0.300000 textures/drum_kit_normal.jpg
+
+newmtl faces.001
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd textures/drum_kit_diffuse.jpg
+map_Bump -bm 0.300000 textures/drum_kit_normal.jpg
+
+newmtl main.001
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd textures/drum_kit_diffuse.jpg
+map_Bump -bm 0.300000 textures/drum_kit_normal.jpg

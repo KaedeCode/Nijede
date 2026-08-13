@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мир Музыкальных Инструментов</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/menu.css">
+    <link rel="icon" href="assets/images/logo.png" type="image/png">
+</head>
+<body>
+    <audio id="bgMusic" loop>
+        <source src="assets/audio/music/main_theme.opus" type="audio/mpeg">
+    </audio>
+
+    <section id="intro" class="section">
+        <div class="intro-content">
+            <div class="intro-search-container top-right">
+                <input type="text" id="introSearch" class="intro-search-input" placeholder="🔍 Поиск инструментов...">
+                <div id="introSearchDropdown" class="search-dropdown"></div>
+            </div>
+
+            <div class="intro-center-block">
+                <h1>Мир Музыкальных Инструментов</h1>
+                <p>Добро пожаловать в интерактивное путешествие по истории и культуре музыки.</p>
+                <p>Вместе с Каэде и Ниджикой вы исследуете удивительный мир звуков.</p>
+                
+                <div class="action-buttons-vertical">
+                    <a href="#kaede" class="start-btn">Начать путешествие</a>
+                    <a href="#" class="info-btn" onclick="showPopup()">О проекте</a>
+                </div>
+            </div>
+
+            <div class="intro-music-controls bottom-right">
+                <button id="introMusicButton" class="music-btn" onclick="toggleMusic()">🎵</button>
+                <span>Музыка</span>
+                <input type="range" id="introVolumeSlider" class="intro-volume-slider" min="0" max="100" value="30" oninput="setVolume(this.value)">
+            </div>
+        </div>
+    </section>
+
+    <section id="kaede" class="section">
+        <div class="section-nav top">
+            <a href="#intro" class="section-nav-btn">↑ Главная</a>
+        </div>
+
+        <div class="content">
+            <div class="text">
+                <h2>Каэде Акамацу</h2>
+                <p>Привет! Я буду вашим проводником в мире клавишных инструментов. Узнаем их историю, устройство и интересные факты.</p>
+                <a href="pages/kaede.html" class="section-enter-btn">Исследовать мир Каэде</a>
+            </div>
+            <div class="character">
+                <img src="assets/images/kaede.png" alt="Каэде">
+            </div>
+        </div>
+
+        <div class="section-nav bottom">
+            <a href="#nijika" class="section-nav-btn">Ниджика ↓</a>
+        </div>
+    </section>
+
+    <section id="nijika" class="section">
+        <div class="section-nav top">
+            <a href="#kaede" class="section-nav-btn">↑ Каэде</a>
+        </div>
+
+        <div class="content">
+            <div class="character">
+                <img src="assets/images/nijika.png" alt="Ниджика">
+            </div>
+            <div class="text">
+                <h2>Ниджика Иджичи</h2>
+                <p>Йо! Я Ниджика, и я расскажу всё о рок-музыке! Ударные, гитары, бас — погрузимся в мир ритма и энергии.</p>
+                <a href="pages/nijika.html" class="section-enter-btn">Исследовать мир Ниджики</a>
+            </div>
+        </div>
+
+        <div class="section-nav bottom">
+            <a href="#intro" class="section-nav-btn">Главная ↓</a>
+        </div>
+    </section>
+
+    <script src="js/main.js"></script>
+    <script src="js/menu.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const audio = document.getElementById('bgMusic');
+            if (audio) audio.volume = 0.3;
+        });
+    </script>
+</body>
+</html>

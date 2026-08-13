@@ -1,0 +1,177 @@
+.novel-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    z-index: 10000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    pointer-events: auto;
+    font-family: 'Segoe UI', 'Arial', 'Meiryo', sans-serif;
+}
+
+.novel-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.novel-character {
+    position: absolute;
+    bottom: 0;
+    right: -5vw;           
+    width: 55vw;           
+    height: 95vh;      
+    max-width: 700px;    
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.novel-sprite {
+    max-height: 100%;
+    max-width: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;      
+    object-position: bottom right;
+    filter: drop-shadow(0 0 12px rgba(0,0,0,0.2)) drop-shadow(0 0 5px rgba(180,120,140,0.3));
+    image-rendering: crisp-edges;
+    user-select: none;
+    -webkit-user-drag: none;
+    transition: filter 0.2s ease;
+}
+
+.novel-sprite {
+    transform: scale(1.2);    
+    transform-origin: bottom right; 
+}
+
+.novel-sprite-animate {
+    animation: spritePulse 0.3s ease-in-out;
+}
+
+@keyframes spritePulse {
+    0% { transform: scale(1.2); filter: brightness(1) drop-shadow(0 0 5px rgba(255,200,220,0.6)); }
+    50% { transform: scale(1.22); filter: brightness(1.1) drop-shadow(0 0 12px rgba(230,150,180,0.8)); }
+    100% { transform: scale(1.2); filter: brightness(1) drop-shadow(0 0 5px rgba(180,120,140,0.3)); }
+}
+
+.novel-dialog {
+    position: absolute;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80vw;
+    max-width: 80vw;
+    min-height: 30vh;
+    background: rgba(106,58,76,0.94);
+    backdrop-filter: blur(8px);
+    border: 2px solid #edc7b0;
+    border-radius: 24px 24px 16px 16px;
+    padding: 24px 36px;
+    color: #fffef7;
+    font-size: 1.5rem;
+    line-height: 1.5;
+    letter-spacing: 0.02em;
+    box-shadow: 0 20px 40px rgba(80,40,50,0.4), 0 0 0 1px rgba(255,220,200,0.4) inset;
+    word-break: break-word;
+    pointer-events: auto;
+    z-index: 101;
+    text-shadow: 1px 1px 0 #4a2e38, 2px 2px 6px rgba(30,10,10,0.6);
+    overflow-y: auto;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.novel-text {
+    margin: 0;
+    font-size: 4vh;
+    user-select: none;
+}
+
+.novel-close {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    width: 40px;
+    height: 40px;
+    background: rgba(0,0,0,0.5);
+    border: 2px solid #edc7b0;
+    border-radius: 50%;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 102;
+    transition: all 0.2s;
+    backdrop-filter: blur(4px);
+}
+
+.novel-close:hover {
+    background: #9d4edd;
+    transform: scale(1.1);
+    border-color: #fff;
+}
+
+.novel-choices {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+    margin-top: 24px;
+    padding: 0 20px;
+}
+
+.novel-choice-btn {
+    background: rgba(157, 78, 221, 0.85);
+    border: 2px solid #edc7b0;
+    border-radius: 60px;
+    padding: 12px 28px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.novel-choice-btn:hover {
+    background: #9d4edd;
+    transform: scale(1.02);
+    border-color: white;
+}
+
+.novel-temp-image {
+    position: fixed;
+    top: 0;
+    left: 28vw;
+    transform: translateX(-50%) translateY(-150%);
+    max-width: 50vw;
+    max-height: 50vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    z-index: 10050;
+    transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    pointer-events: none;
+    filter: drop-shadow(0 8px 20px rgba(0,0,0,0.4));
+    border: 2px solid rgba(53, 53, 53, 0.385);
+    border-radius: 8px;
+    background: #111;
+    display: block;
+    opacity: 1;
+}
+.novel-temp-image.show {
+    transform: translateX(-50%) translateY(25%);
+}

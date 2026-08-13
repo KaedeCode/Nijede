@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>КАЭДЕ</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/menu.css">
+    <link rel="stylesheet" href="../css/novel.css">
+    <link rel="icon" href="../assets/images/logo.png" type="image/png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/MTLLoader.js"></script>
+    <script>
+        window.modelsLoadedPromise = new Promise((resolve) => {
+            window.resolveModelsLoaded = resolve;
+        });
+    </script>
+</head>
+<body>
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <p>Загрузка комнаты Каэде...</p>
+        </div>
+    </div>
+
+    <div class="burger-button">☰</div>
+
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <span class="sidebar-title">Меню</span>
+            <button class="close-sidebar" aria-label="Закрыть">✕</button>
+        </div>
+        <nav class="sidebar-nav">
+            <a class="sidebar-link" href="../index.html">🏠 Главная</a>
+            <a class="sidebar-link" href="nijika.html">🎸 Ниджика</a>
+            <a class="sidebar-link" href="kaede.html">🎹 Каэде</a>
+            <a class="sidebar-link" onclick="showPopup()">ℹ️ Инфо</a>
+            <div class="search-container">
+                <input type="text" id="searchInput" class="search-input" placeholder="🔍 Поиск инструментов...">
+                <div id="searchDropdown" class="search-dropdown"></div>
+            </div>
+        </nav>
+        <div class="sidebar-music">
+            <div class="music-row">
+                <button id="musicButton" class="music-btn" onclick="toggleMusic()">🎵</button>
+                <span>Музыка</span>
+            </div>
+            <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="30" oninput="setVolume(this.value)">
+        </div>
+    </div>
+
+    <audio id="bgMusic" loop>
+        <source src="../assets/audio/music/moonlight_sonata.opus" type="audio/mpeg">
+    </audio>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/menu.js"></script>
+    <script src="../js/kaede-scene.js"></script>
+    <script>
+        const loadingScreen = document.getElementById('loadingScreen');
+        const startTime = Date.now();
+        const minDisplayTime = 500;
+        function hideLoadingScreen() {
+            const elapsed = Date.now() - startTime;
+            const remaining = Math.max(0, minDisplayTime - elapsed);
+            setTimeout(() => {
+                loadingScreen.classList.add('hidden');
+                setTimeout(() => {
+                    if (loadingScreen.parentNode) loadingScreen.remove();
+                }, 500);
+            }, remaining);
+        }
+        if (window.modelsLoadedPromise) {
+            window.modelsLoadedPromise.finally(hideLoadingScreen);
+        } else {
+            setTimeout(hideLoadingScreen, minDisplayTime);
+        }
+    </script>
+    <script src="../js/novel.js"></script>
+    <script src="../js/dialogs.js"></script>
+</body>
+</html>

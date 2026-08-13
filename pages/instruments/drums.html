@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Ударные</title>
+        <style>
+            html {
+                background-color: #ffe298;
+            }
+            h1 {
+                color: #fcff41;
+                background-color: #beaf29;
+                margin: 0;
+                height: 9vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-shadow: 0 0 5px #fff133, 0 0 10px #fffc33;
+            }
+            #exit {
+                display: flex;
+                position: absolute;
+                justify-content: center;
+                align-items: center;
+                width: 80px;
+                height: 80px;
+                top: 10px;
+                left: 10px;
+                margin: auto;
+                font-size: 25px;
+                background: #beab00;
+                border: none;
+                border-radius: 50px;
+                color: white;
+                font-weight: bold;
+                cursor: pointer;
+                transition: 0.1s;
+                box-shadow: 0 2px 8px rgba(50,30,15,0.8);
+            }
+            #exit:hover {
+                background: #f0e545;
+                transform: scale(1.02);
+                box-shadow: 0 0 12px #ffaa44;
+            }
+            #staff {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 10px;
+                padding: 20px;
+                margin-top: 20px;
+                background: #f7e5c2;
+                border-radius: 24px;
+                box-shadow: inset 0 1px 4px rgba(100,70,30,0.05), 0 4px 12px rgba(80,60,30,0.1);
+            }
+
+            #BPlay {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 120px;
+                height: 120px;
+                margin: auto;
+                background: #e6dd5e;
+                border: none;
+                border-radius: 15px;
+                cursor: pointer;
+                transition: 0.1s;
+                box-shadow: 0 5px 12px rgba(80,50,20,0.3);
+            }
+            #BPlay:hover {
+                background: #f0e47a;
+                transform: scale(1.02);
+                box-shadow: 0 5px 12px rgba(80,50,20,0.3), 0 0 12px #fffc44;
+            }
+            #BPlay:active {
+                transform: scale(0.98);
+            }
+            #imgBPlay {
+                filter: drop-shadow(0 2px 2px rgba(80,50,20,0.3));
+            }
+            .time-signature {
+                font-size: 45px;
+                cursor: default;
+                user-select: none;
+                background: rgba(200,120,40,0.6);
+                padding: 5px 10px;
+                border-radius: 20px;
+                color: #ffffcc;
+                text-shadow: 0 2px 3px #3e2a1a;
+            }
+            #tempo {
+                width: 80px;
+                height: 40px;
+                font-size: 20px;
+                border: none;
+                border-radius: 40px;
+                text-align: center;
+                background: #fff3d1;
+                font-weight: bold;
+                color: #6b3f1c;
+                box-shadow: inset 0 1px 2px rgba(80,50,20,0.1), 0 1px 2px #fff8e7;
+            }
+            .time-signature {
+                font-size: 45px;
+                cursor: default;
+                user-select: none;
+            }
+
+            .bar {
+                position: relative;
+                background-color: #ccc;
+                width: fit-content;
+                height: 150px;
+                border: 1px solid #999;
+                flex-shrink: 0;
+
+                display: flex;
+                flex-direction: column;
+                justify-content: space-around;
+                align-items: center;
+                padding: 0 20px;
+                
+                font-family: serif;
+                font-size: 30px;
+                font-weight: bold;
+                user-select: none;
+            }
+            #textOfBar {
+                position: absolute;
+                top: 5px;
+                left: 0px;
+                font-size: 20px;
+                font-weight: normal;
+                color: #7a4a1a;
+                background: rgba(255,250,210,0.5);
+                padding: 2px 8px;
+                border-radius: 20px;
+                font-family: sans-serif;
+                backdrop-filter: blur(2px);
+                z-index: 10000;
+            }
+            .note {
+                width: 40px;
+                flex-shrink: 0;
+                border: 0px;
+            }
+            .imgBar {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                image-rendering: crisp-edges;
+                z-index: 1
+            }
+            .bar-1row, .bar-2row, .bar-3row, .bar-4row, .bar-5row, .bar-6row, .bar-7row, .bar-8row, .bar-row {
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                width: fit-content;
+                z-index: 2;
+            }
+            .bar-1row { 
+                position: absolute;
+                top: -13px; 
+            }  
+            .bar-2row { 
+                position: absolute;
+                top: -2px; 
+            } 
+            .bar-3row { 
+                position: absolute;
+                top: 32px; 
+            } 
+            .bar-4row {
+                position: absolute;
+                top: 42px; 
+            } 
+            .bar-5row { 
+                position: absolute;
+                top: 55px; 
+            } 
+            .bar-6row { 
+                position: absolute;
+                top: 65px; 
+            } 
+            .bar-7row { 
+                position: absolute;
+                top: 87px; 
+            } 
+            .bar-8row { 
+                position: absolute;
+                top: 109px; 
+            } 
+
+            .note-popup, .bar-popup {
+                display: none;
+                position: absolute;
+                background: rgba(90,55,25,0.95);
+                backdrop-filter: blur(8px);
+                border: 1px solid rgba(255,235,180,0.4);
+                border-radius: 20px;
+                padding: 10px;
+                box-shadow: 0 8px 20px rgba(60,40,20,0.4);
+                z-index: 1000;
+                flex-direction: column;
+                gap: 5px;
+            }
+            .note-popup button, .bar-popup button {
+                cursor: pointer;
+                padding: 8px 12px;
+                border: none;
+                background: #c98a3a;
+                color: #ffffe0;
+                border-radius: 40px;
+                font-weight: bold;
+                transition: background 0.2s;
+            }
+            .note-popup button:hover, .bar-popup button:hover {
+                background: #e0a457;
+                transform: scale(1.02);
+                box-shadow: 0 0 8px #ffeb33;
+            }
+
+            .clue {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                display: none;
+                justify-content: center;
+                align-items: center;
+                width: 250px;
+                height: 400px;
+                font-size: 30px;
+                background: white;
+                border: 2px solid #000;
+                border-radius: 8px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+                z-index: 10000;
+            }
+
+            #repeatsOfBar {
+                position: absolute;
+                top: 5px;
+                right: 8px;
+                font-size: 14px;
+                font-weight: normal;
+                color: #333;
+                background: rgba(255,255,255,0.7);
+                padding: 2px 6px;
+                border-radius: 10px;
+                font-family: sans-serif;
+            }
+            #countRepeats {
+                display: none;
+                position: absolute;
+                background: white;
+                border: 2px solid #2196F3;
+                border-radius: 8px;
+                padding: 10px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+                z-index: 1000;
+                flex-direction: column;
+                gap: 10px;
+                min-width: 150px;
+                text-align: center;
+            }
+            #countRepeats label {
+                font-size: 14px;
+                font-family: sans-serif;
+            }
+            #countRepeats input {
+                padding: 5px;
+                font-size: 14px;
+                text-align: center;
+            }
+            #countRepeats button {
+                cursor: pointer;
+                padding: 5px 10px;
+                border: none;
+                background: #2196F3;
+                color: white;
+                border-radius: 4px;
+            }
+            #countRepeats button:hover {
+                background: #0b5e8a;
+            }
+            .drums {
+                display: block;
+                position: relative;
+                margin: auto;
+                width: 50%;
+                user-select: none;
+            }
+            .hi-hat {
+                display: flex;
+                position: absolute;
+                border-radius: 40px;
+                width: 90px;
+                height: 90px;
+                top: 190px;
+                left: 95px;
+            }
+            .open-hi-hat {
+                display: flex;
+                position: absolute;
+                width: 40px;
+                height: 90px;
+                top: 190px;
+                left: 70px;
+            }
+            .pedal-hi-hat {
+                display: flex;
+                position: absolute;
+                transform: rotate(-45deg);
+                width: 30px;
+                height: 70px;
+                top: 250px;
+                left: 170px;
+            }
+            .snare {
+                display: flex;
+                position: absolute;
+                border-radius: 40px;
+                width: 90px;
+                height: 90px;
+                top: 190px;
+                left: 187px;
+            }
+            .bassDrum {
+                display: flex;
+                position: absolute;
+                width: 30px;
+                height: 70px;
+                top: 195px;
+                left: 290px;
+            }
+            .floorTom {
+                display: flex;
+                position: absolute;
+                border-radius: 50px;
+                width: 105px;
+                height: 105px;
+                top: 183px;
+                left: 332px;
+            }
+            .midTom {
+                display: flex;
+                position: absolute;
+                border-radius: 50px;
+                width: 90px;
+                height: 90px;
+                top: 95px;
+                left: 295px;
+            }
+            .hiTom {
+                display: flex;
+                position: absolute;
+                border-radius: 50px;
+                width: 80px;
+                height: 80px;
+                top: 110px;
+                left: 210px;
+            }
+            .crash {
+                display: flex;
+                position: absolute;
+                border-radius: 110px;
+                width: 115px;
+                height: 115px;
+                top: 47px;
+                left: 127px;
+            }
+            .ride {
+                display: flex;
+                position: absolute;
+                border-radius: 110px;
+                width: 130px;
+                height: 130px;
+                top: 25px;
+                left: 360px;
+            }
+            #exit {
+                display: flex;
+                position: absolute;
+                justify-content: center;
+                align-items: center;
+                width: 80px;
+                height: 80px;
+                top: 10px;
+                left: 10px;
+                margin: auto; 
+                font-size: 25px;
+            }
+            #BAddBar {
+                top: 5px;
+                left: 8px;
+                font-size: 20px;
+                font-weight: normal;
+                color: #7a4a1a;
+                background: rgba(255,250,210,0.9);
+                padding: 2px 8px;
+                border-radius: 20px;
+                font-family: sans-serif;
+                backdrop-filter: blur(2px);
+            }
+        </style>
+        <link rel="icon" href="../../assets/images/logo.png" type="image/png">
+        <script src="js/drumsAudio.js"></script>
+    </head>
+    <body>
+        <div class="clue">
+            0 - бас-бочка<br>
+            1 - крэш<br>
+            2 - райд<br>
+            3 - малый<br>
+            4 - закрытый хай-хет<br>
+            5 - открытый хай-хет<br>
+            6 - педаль хай-хета<br>
+            7 - напольный том<br>
+            8 - средний том<br>
+            9 - высокий том<br>
+            - - стик<br>
+            = - бел райда
+        </div>
+        <div class="overlay">
+            <button id="exit" onclick="window.location.href = '../nijika.html'">Выход</button>
+            <h1 align="center">УДАРНЫЕ</h1>
+            <div class="note-popup">
+                <button onclick="noteMenuSplit()">Разделить(S)</button>
+                <button onclick="noteMenuMerge()">Соединить(W)</button>
+                <button onclick="addNote()">Добавить(A)</button>
+                <button onclick="delNote()">Удалить(D)</button>
+                <button onclick="CDTie()">С/У лигу</button>
+            </div>
+            <div class="bar-popup">
+                <button onclick="duplicateBar()">Дублировать(E)</button>
+                <button onclick="deleteBar()">Удалить(R)</button>
+                <button onclick="rightBar()">Вправо</button>
+                <button onclick="leftBar()">Влево</button>
+                <button onclick="startOfRepeat()">Начало репризыt</button>
+                <button onclick="endOfRepeat()">Конец репризы</button>
+            </div>
+            <div id="countRepeats" class="bar-popup" style="display: none;">
+                <label for="repeatCount">Количество повторений (мин. 2):</label>
+                <input type="number" id="repeatCount" min="2" value="2">
+                <button onclick="confirmRepeat()">Подтвердить</button>
+                <button onclick="cancelRepeat()">Отмена</button>
+            </div>
+
+            <div class="drums">
+                <img src="images/drums.png" id="drumsI">
+                <div class="hi-hat" onclick="playAudioDrum('cHH', null)"></div>
+                <div class="open-hi-hat" onclick="playAudioDrum('oHH', null)"></div>
+                <div class="pedal-hi-hat" onclick="playAudioDrum('pHH', null)"></div>
+                <div class="snare" onclick="playAudioDrum('snare', null)"></div>
+                <div class="bassDrum" onclick="playAudioDrum('bassDrum', null)"></div>
+                <div class="floorTom" onclick="playAudioDrum('lowTom', null)"></div>
+                <div class="midTom" onclick="playAudioDrum('midTom', null)"></div>
+                <div class="hiTom" onclick="playAudioDrum('hiTom', null)"></div>
+                <div class="crash" onclick="playAudioDrum('crash', null)"></div>
+                <div class="ride" onclick="playAudioDrum('ride', null)"></div>
+            </div>
+
+            <br>
+            <button onclick="play()" id="BPlay"><img src="images/play.png" width="100%" id="imgBPlay"></button>
+            <br>
+            <input type="text" id="tempo" placeholder="Tempo" min="10" max="300"><br>
+            <div id="staff">
+                <div class="time-signature">
+                    <span onclick="sigTop(this)">&nbsp;4</span>
+                    <br>---<br>
+                    <span onclick="sigBottom(this)">&nbsp;4</span>
+                </div>
+                <button onclick="addBar()" id="BAddBar">Добавить<br>такт(T)</button>
+            </div>
+        </div>
+        <script>
+            createDrums();
+        </script>
+    </body>
+</html>
