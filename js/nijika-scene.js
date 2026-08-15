@@ -160,7 +160,7 @@
             { label: "Описания", type: "dialog", action: "info" }
         ],
         "nijika_door": [
-            { label: "Выйти", type: "redirect", url: "/Nijede/index.html" }
+            { label: "Выйти", type: "redirect", url: "../index.html" }
         ]
     };
 

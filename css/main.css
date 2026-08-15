@@ -514,3 +514,9 @@ html {
 .context-menu-item-n:active {
     background: rgba(221, 212, 78, 0.5);
 }
+
+.loading-subtext {
+    font-size: 1rem;
+    opacity: 0.6;
+    margin-top: 10px;
+}

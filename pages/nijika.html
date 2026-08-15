@@ -21,6 +21,7 @@
         <div class="loading-content">
             <div class="loading-spinner"></div>
             <p>Загрузка комнаты Ниджики...</p>
+            <p class="loading-subtext">Первая загрузка может занять некоторое время</p>
         </div>
     </div>
 
@@ -58,25 +59,49 @@
     <script src="../js/main.js"></script>
     <script src="../js/menu.js"></script>
     <script src="../js/nijika-scene.js"></script>
+    <script src="../js/resource-loader.js"></script>
     <script>
-        const loadingScreen = document.getElementById('loadingScreen');
-        const startTime = Date.now();
-        const minDisplayTime = 500;
-        function hideLoadingScreen() {
-            const elapsed = Date.now() - startTime;
-            const remaining = Math.max(0, minDisplayTime - elapsed);
-            setTimeout(() => {
-                loadingScreen.classList.add('hidden');
+        (function() {
+            const loadingScreen = document.getElementById('loadingScreen');
+            const startTime = Date.now();
+            const minDisplayTime = 500;
+
+            function hideLoadingScreen() {
+                const elapsed = Date.now() - startTime;
+                const remaining = Math.max(0, minDisplayTime - elapsed);
                 setTimeout(() => {
-                    if (loadingScreen.parentNode) loadingScreen.remove();
-                }, 500);
-            }, remaining);
-        }
-        if (window.modelsLoadedPromise) {
-            window.modelsLoadedPromise.finally(hideLoadingScreen);
-        } else {
-            setTimeout(hideLoadingScreen, minDisplayTime);
-        }
+                    loadingScreen.classList.add('hidden');
+                    setTimeout(() => {
+                        if (loadingScreen.parentNode) loadingScreen.remove();
+                    }, 500);
+                }, remaining);
+            }
+
+            const nijikaResources = [
+                '../assets/images/sprites/nijika/extremeJoy.webp',
+                '../assets/images/sprites/nijika/fury.webp',
+                '../assets/images/sprites/nijika/hf.webp',
+                '../assets/images/sprites/nijika/indifference.webp',
+                '../assets/images/sprites/nijika/joy.webp',
+                '../assets/images/sprites/nijika/legendary.jpg.webp',
+                '../assets/images/sprites/nijika/misunderstanding.webp',
+                '../assets/images/sprites/nijika/relaxation.webp',
+                '../assets/images/sprites/nijika/request.webp',
+                '../assets/images/sprites/nijika/resentment.webp',
+                '../assets/images/sprites/nijika/sadness.webp',
+                '../assets/images/sprites/nijika/trueHappiness.webp',
+                '../assets/audio/music/to_live_is_to_die.opus'
+            ];
+
+            if (window.modelsLoadedPromise) {
+                Promise.all([
+                    window.modelsLoadedPromise,
+                    loadResources(nijikaResources)
+                ]).then(hideLoadingScreen);
+            } else {
+                loadResources(nijikaResources).then(hideLoadingScreen);
+            }
+        })();
     </script>
     <script src="../js/novel.js"></script>
     <script src="../js/dialogs.js"></script>

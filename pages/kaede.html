@@ -21,6 +21,7 @@
         <div class="loading-content">
             <div class="loading-spinner"></div>
             <p>Загрузка комнаты Каэде...</p>
+            <p class="loading-subtext">Первая загрузка может занять некоторое время</p>
         </div>
     </div>
 
@@ -58,25 +59,83 @@
     <script src="../js/main.js"></script>
     <script src="../js/menu.js"></script>
     <script src="../js/kaede-scene.js"></script>
+    <script src="../js/resource-loader.js"></script>
     <script>
-        const loadingScreen = document.getElementById('loadingScreen');
-        const startTime = Date.now();
-        const minDisplayTime = 500;
-        function hideLoadingScreen() {
-            const elapsed = Date.now() - startTime;
-            const remaining = Math.max(0, minDisplayTime - elapsed);
-            setTimeout(() => {
-                loadingScreen.classList.add('hidden');
+        (function() {
+            const loadingScreen = document.getElementById('loadingScreen');
+            const startTime = Date.now();
+            const minDisplayTime = 500;
+
+            function hideLoadingScreen() {
+                const elapsed = Date.now() - startTime;
+                const remaining = Math.max(0, minDisplayTime - elapsed);
                 setTimeout(() => {
-                    if (loadingScreen.parentNode) loadingScreen.remove();
-                }, 500);
-            }, remaining);
-        }
-        if (window.modelsLoadedPromise) {
-            window.modelsLoadedPromise.finally(hideLoadingScreen);
-        } else {
-            setTimeout(hideLoadingScreen, minDisplayTime);
-        }
+                    loadingScreen.classList.add('hidden');
+                    setTimeout(() => {
+                        if (loadingScreen.parentNode) loadingScreen.remove();
+                    }, 500);
+                }, remaining);
+            }
+
+            const kaedeResources = [
+                '../assets/images/sprites/kaede/accuse.webp',
+                '../assets/images/sprites/kaede/afraid.webp',
+                '../assets/images/sprites/kaede/annoyed1.webp',
+                '../assets/images/sprites/kaede/annoyed2.webp',
+                '../assets/images/sprites/kaede/confused.webp',
+                '../assets/images/sprites/kaede/crying.webp',
+                '../assets/images/sprites/kaede/dreaming.webp',
+                '../assets/images/sprites/kaede/explain1.webp',
+                '../assets/images/sprites/kaede/explain2.webp',
+                '../assets/images/sprites/kaede/extremely_surprised.webp',
+                '../assets/images/sprites/kaede/fear.webp',
+                '../assets/images/sprites/kaede/focused.webp',
+                '../assets/images/sprites/kaede/glad.webp',
+                '../assets/images/sprites/kaede/happily_explains.webp',
+                '../assets/images/sprites/kaede/happy.webp',
+                '../assets/images/sprites/kaede/inspiring.webp',
+                '../assets/images/sprites/kaede/recognizing.webp',
+                '../assets/images/sprites/kaede/shy.webp',
+                '../assets/images/sprites/kaede/smiling.webp',
+                '../assets/images/sprites/kaede/thoughtfully_explains.webp',
+                '../assets/images/sprites/kaede/trusts.webp',
+                '../assets/images/sprites/kaede/uncomfortable.webp',
+                '../assets/images/sprites/kaede/very_angry.webp',
+                '../assets/images/sprites/kaede/very_confused.webp',
+                '../assets/images/kaede_room/80s_synth_pop.webp',
+                '../assets/images/kaede_room/chopin_portrait.webp',
+                '../assets/images/kaede_room/cristofori_piano.webp',
+                '../assets/images/kaede_room/daw_interface.webp',
+                '../assets/images/kaede_room/equalizer_graph.webp',
+                '../assets/images/kaede_room/fl_studio_logo.webp',
+                '../assets/images/kaede_room/fm_synthesis_diagram.webp',
+                '../assets/images/kaede_room/gramophone.webp',
+                '../assets/images/kaede_room/harmor_interface.webp',
+                '../assets/images/kaede_room/kandinsky_music.webp',
+                '../assets/images/kaede_room/moog_modular.webp',
+                '../assets/images/kaede_room/music_and_painting.webp',
+                '../assets/images/kaede_room/music_stand.webp',
+                '../assets/images/kaede_room/old_pianist.webp',
+                '../assets/images/kaede_room/piano_mechanism_diagram.webp',
+                '../assets/images/kaede_room/sampler_interface.webp',
+                '../assets/images/kaede_room/saw_wave.webp',
+                '../assets/images/kaede_room/sheet_music.webp',
+                '../assets/images/kaede_room/street_piano.webp',
+                '../assets/images/kaede_room/sunset_painting.webp',
+                '../assets/images/kaede_room/synth_basics.webp',
+                '../assets/images/note_bg.png',
+                '../assets/audio/music/moonlight_sonata.opus'
+            ];
+
+            if (window.modelsLoadedPromise) {
+                Promise.all([
+                    window.modelsLoadedPromise,
+                    loadResources(kaedeResources)
+                ]).then(hideLoadingScreen);
+            } else {
+                loadResources(kaedeResources).then(hideLoadingScreen);
+            }
+        })();
     </script>
     <script src="../js/novel.js"></script>
     <script src="../js/dialogs.js"></script>
