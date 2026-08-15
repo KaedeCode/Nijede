@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой профиль</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/menu.css">
+    <link rel="icon" href="assets/images/logo.png" type="image/png">
+</head>
+<body>
+    <div class="burger-button">☰</div>
+
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <span class="sidebar-title">Меню</span>
+            <button class="close-sidebar" aria-label="Закрыть">✕</button>
+        </div>
+        <nav class="sidebar-nav">
+            <a class="sidebar-link" href="index.html">🏠 Главная</a>
+            <a class="sidebar-link" href="pages/kaede.html">🎹 Каэде</a>
+            <a class="sidebar-link" href="pages/nijika.html">🎸 Ниджика</a>
+            <a class="sidebar-link" onclick="showPopup()">ℹ️ Инфо</a>
+            <div class="search-container">
+                <input type="text" id="searchInput" class="search-input" placeholder="🔍 Поиск инструментов...">
+                <div id="searchDropdown" class="search-dropdown"></div>
+            </div>
+        </nav>
+        <div class="sidebar-music">
+            <div class="music-row">
+                <button id="musicButton" class="music-btn" onclick="toggleMusic()">🎵</button>
+                <span>Музыка</span>
+            </div>
+            <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="30" oninput="setVolume(this.value)">
+        </div>
+    </div>
+
+    <div class="profile-container">
+        <div class="profile-card">
+            <h1>Мой профиль</h1>
+            <div id="profileContent">
+                <p><strong>Имя пользователя:</strong> <span id="profileUsername">—</span></p>
+                <p><strong>Дата регистрации:</strong> <span id="profileCreated">—</span></p>
+                <p><strong>ID:</strong> <span id="profileId">—</span></p>
+                <div class="profile-actions">
+                    <button id="profileLogout" class="auth-btn logout-btn">Выйти</button>
+                    <button id="profileEdit" class="auth-btn" style="background: #9d4edd; border-color: #9d4edd;">Редактировать (скоро)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/menu.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const auth = window.Auth;
+            if (!auth) return;
+
+            if (!auth.isAuthenticated()) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            const user = auth.getUser();
+            document.getElementById('profileUsername').textContent = user.username;
+            document.getElementById('profileId').textContent = user.id;
+            document.getElementById('profileCreated').textContent = user.created ? new Date(user.created).toLocaleString() : '—';
+
+            document.getElementById('profileLogout').addEventListener('click', function() {
+                auth.logout();
+                window.location.href = 'index.html';
+            });
+
+            document.getElementById('profileEdit').addEventListener('click', function() {
+                alert('Редактирование профиля будет доступно позже.');
+            });
+
+            if (auth.updateUI) auth.updateUI();
+
+            const audio = document.getElementById('bgMusic');
+            if (audio) {
+                audio.volume = (document.getElementById('volumeSlider')?.value || 30) / 100;
+            }
+        });
+
+        function toggleMusic() {
+            const bgMusic = document.getElementById('bgMusic');
+            if (bgMusic) {
+                if (bgMusic.paused) bgMusic.play();
+                else bgMusic.pause();
+            }
+        }
+
+        function setVolume(value) {
+            const bgMusic = document.getElementById('bgMusic');
+            if (bgMusic) {
+                bgMusic.volume = value / 100;
+            }
+        }
+
+        function showPopup() {
+            Swal.fire({
+                title: 'О проекте',
+                html: '...',
+                icon: 'info',
+                confirmButtonText: 'Закрыть',
+                background: '#1a1a2e',
+                color: '#fff',
+                confirmButtonColor: '#9d4edd'
+            });
+        }
+    </script>
+</body>
+</html>

@@ -57,7 +57,6 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 28px;
     padding-bottom: 16px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
@@ -293,4 +292,18 @@
         font-size: 1rem;
         padding: 10px 14px;
     }
+}
+
+.sidebar-profile-link {
+    color: #c77dff;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: rgba(157, 78, 221, 0.15);
+    transition: background 0.2s;
+}
+.sidebar-profile-link:hover {
+    background: rgba(157, 78, 221, 0.3);
 }

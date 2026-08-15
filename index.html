@@ -10,22 +10,26 @@
     <link rel="icon" href="assets/images/logo.png" type="image/png">
 </head>
 <body>
+    <div id="profileTopLeft"></div>
+
     <audio id="bgMusic" loop>
         <source src="assets/audio/music/main_theme.opus" type="audio/mpeg">
     </audio>
 
     <section id="intro" class="section">
         <div class="intro-content">
-            <div class="intro-search-container top-right">
-                <input type="text" id="introSearch" class="intro-search-input" placeholder="🔍 Поиск инструментов...">
-                <div id="introSearchDropdown" class="search-dropdown"></div>
-            </div>
+            <div class="intro-auth-container top-right" id="authButtons"></div>
 
             <div class="intro-center-block">
                 <h1>Мир Музыкальных Инструментов</h1>
                 <p>Добро пожаловать в интерактивное путешествие по истории и культуре музыки.</p>
                 <p>Вместе с Каэде и Ниджикой вы исследуете удивительный мир звуков.</p>
-                
+
+                <div class="intro-search-container">
+                    <input type="text" id="introSearch" class="intro-search-input" placeholder="🔍 Поиск инструментов...">
+                    <div id="introSearchDropdown" class="search-dropdown"></div>
+                </div>
+
                 <div class="action-buttons-vertical">
                     <a href="#kaede" class="start-btn">Начать путешествие</a>
                     <a href="#" class="info-btn" onclick="showPopup()">О проекте</a>
@@ -83,7 +87,7 @@
     </section>
 
     <script src="js/main.js"></script>
-    <script src="js/menu.js"></script>
+    <script src="js/auth.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const audio = document.getElementById('bgMusic');

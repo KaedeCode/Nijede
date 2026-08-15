@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
         burger.addEventListener('click', function() {
             sidebar.classList.add('open');
             burger.style.display = 'none';
+            if (window.Auth) window.Auth.updateUI();
         });
     }
 
@@ -40,6 +41,15 @@ document.addEventListener('DOMContentLoaded', function() {
         if (audio) {
             audio.volume = volumeSlider.value / 100;
         }
+    }
+
+    var sidebarHeader = sidebar ? sidebar.querySelector('.sidebar-header') : null;
+    var sidebarNav = sidebar ? sidebar.querySelector('.sidebar-nav') : null;
+    if (sidebarHeader && sidebarNav && !sidebar.querySelector('.sidebar-auth')) {
+        var authDiv = document.createElement('div');
+        authDiv.className = 'sidebar-auth';
+        sidebarHeader.parentNode.insertBefore(authDiv, sidebarNav);
+        if (window.Auth) window.Auth.updateUI();
     }
 
     var searchInput = document.getElementById('searchInput');

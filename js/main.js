@@ -46,6 +46,10 @@ function showPopup() {
 }
 
 document.addEventListener('keydown', function(event) {
+    const target = event.target;
+    if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.closest('.auth-modal-overlay')) {
+        return;
+    }
     if (document.querySelector('.section')) {
         const sections = ['intro', 'kaede', 'nijika'];
         const currentHash = window.location.hash || '#intro';
@@ -121,3 +125,8 @@ if (introSearch && introDropdown) {
         }
     });
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('authButtons')) {
+    }
+});
