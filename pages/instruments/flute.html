@@ -10,7 +10,7 @@
 <body>
     <h1 align="center">ФЛЕЙТА</h1>
 
-    <button id="exit" onclick="window.location.href = '../nijika.html'">Выход</button>
+    <button id="exit" onclick="window.location.href = '../kaede.html'">Выход</button>
 
     <div id="note-menu" class="note-popup">
         <button onclick="noteMenuSplit()">Разделить(S)</button>
@@ -18,7 +18,9 @@
         <button onclick="addNoteForKey()">Добавить(A)</button>
         <button onclick="delNoteFromKey()">Удалить(D)</button>
         <button onclick="CDTie()">С/У лигу</button>
+        <button id="show-chord-btn" onclick="event.stopPropagation(); openChordFromNoteMenu();" style="display:none;">Открыть аккорд</button>
     </div>
+
     <div id="bar-menu" class="bar-popup">
         <button onclick="duplicateBar()">Дублировать(E)</button>
         <button onclick="deleteBar()">Удалить(R)</button>
@@ -27,11 +29,17 @@
         <button onclick="startOfRepeat()">Начало репризыt</button>
         <button onclick="endOfRepeat()">Конец репризы</button>
     </div>
+
     <div id="countRepeats" class="bar-popup" style="display: none;">
         <label for="repeatCount">Количество повторений (мин. 2):</label>
         <input type="number" id="repeatCount" min="2" value="2">
         <button onclick="confirmRepeat()">Подтвердить</button>
         <button onclick="cancelRepeat()">Отмена</button>
+    </div>
+
+    <div id="chord-menu" class="note-popup" style="display: none; flex-direction: column;">
+        <div id="chord-list" style="max-height: 200px; overflow-y: auto; width: 150px; color: cyan;"></div>
+        <button id="chord-close-btn" style="margin-top: 5px;">Закрыть</button>
     </div>
 
     <div class="piano-container" id="piano">
@@ -58,7 +66,7 @@
     </div>
 
     <script>
-        createPiano("flute", 3, 6, document.getElementById("piano"), document.getElementById('note-menu'), document.getElementById('bar-menu'));
+        createPiano("piano", 2, 7, document.getElementById("piano"), document.getElementById('note-menu'), document.getElementById('bar-menu'));
     </script>
 </body>
 </html>
