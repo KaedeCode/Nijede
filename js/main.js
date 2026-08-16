@@ -133,4 +133,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
 window.API_BASE = window.location.hostname === 'localhost'
   ? 'http://localhost:3000/api'
-  : 'https://ваш-сервис.onrender.com/api'; // заменить
+  : 'https://nijede-backend.onrender.com/';
