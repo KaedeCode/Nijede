@@ -80,57 +80,58 @@ window.searchData = [
     { name: "Флейта", category: "Ниджика", url: "../pages/instruments/flute.html" }
 ];
 
-const introSearch = document.getElementById('introSearch');
-const introDropdown = document.getElementById('introSearchDropdown');
+(function initIntroSearch() {
+    const introSearch = document.getElementById('introSearch');
+    const introDropdown = document.getElementById('introSearchDropdown');
+    if (!introSearch || !introDropdown) return;
 
-if (introSearch && introDropdown) {
-    introSearch.addEventListener('input', (e) => {
+    introSearch.addEventListener('input', function(e) {
         const query = e.target.value;
         if (!query.trim()) {
             introDropdown.classList.remove('show');
             return;
         }
-        const filtered = searchData.filter(item => 
-            item.name.toLowerCase().includes(query.toLowerCase())
-        );
+        const filtered = window.searchData.filter(function(item) {
+            return item.name.toLowerCase().includes(query.toLowerCase());
+        });
         if (filtered.length === 0) {
             introDropdown.innerHTML = '<div class="search-item" style="color: #aaa;">Ничего не найдено</div>';
             introDropdown.classList.add('show');
             return;
         }
         const grouped = {};
-        filtered.forEach(item => {
+        filtered.forEach(function(item) {
             if (!grouped[item.category]) grouped[item.category] = [];
             grouped[item.category].push(item);
         });
         let html = '';
-        for (const [category, items] of Object.entries(grouped)) {
-            html += `<div class="search-category">${category}</div>`;
-            items.forEach(item => {
-                html += `<div class="search-item" data-url="${item.url}">${item.name}</div>`;
+        for (const category in grouped) {
+            html += '<div class="search-category">' + category + '</div>';
+            grouped[category].forEach(function(item) {
+                html += '<div class="search-item" data-url="' + item.url + '">' + item.name + '</div>';
             });
         }
         introDropdown.innerHTML = html;
         introDropdown.classList.add('show');
-        introDropdown.querySelectorAll('.search-item[data-url]').forEach(el => {
-            el.addEventListener('click', () => {
+        introDropdown.querySelectorAll('.search-item[data-url]').forEach(function(el) {
+            el.addEventListener('click', function() {
                 window.location.href = el.dataset.url;
             });
         });
     });
 
-    document.addEventListener('click', (e) => {
+    document.addEventListener('click', function(e) {
         if (!introSearch.contains(e.target) && !introDropdown.contains(e.target)) {
             introDropdown.classList.remove('show');
         }
     });
-}
+})();
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
     if (document.getElementById('authButtons')) {
     }
 });
 
 window.API_BASE = window.location.hostname === 'localhost'
   ? 'http://localhost:3000/api'
-  : 'https://nijede-backend.onrender.com';
+  : 'https://nijede-backend.onrender.com/api';
