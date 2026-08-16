@@ -130,3 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('authButtons')) {
     }
 });
+
+window.API_BASE = window.location.hostname === 'localhost'
+  ? 'http://localhost:3000/api'
+  : 'https://ваш-сервис.onrender.com/api'; // заменить
