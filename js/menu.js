@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        var filtered = searchData.filter(function(item) {
+        var filtered = window.searchData.filter(function(item) {
             return item.name.toLowerCase().indexOf(query.toLowerCase()) !== -1;
         });
 

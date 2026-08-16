@@ -68,7 +68,7 @@ document.addEventListener('keydown', function(event) {
     }
 });
 
-const searchData = [
+window.searchData = [
     { name: "Пианино", category: "Каэдэ", url: "../pages/instruments/piano.html" },
     { name: "Синтезатор", category: "Каэдэ", url: "../pages/instruments/synthesizer.html" },
     { name: "Ударная установка", category: "Ниджика", url: "../pages/instruments/drums.html" },
@@ -133,4 +133,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
 window.API_BASE = window.location.hostname === 'localhost'
   ? 'http://localhost:3000/api'
-  : 'https://nijede-backend.onrender.com/';
+  : 'https://nijede-backend.onrender.com';
