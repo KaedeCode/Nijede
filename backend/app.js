@@ -62,9 +62,11 @@ const sessionConfig = {
   cookie: {
     maxAge: 1000 * 60 * 60 * 24,
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: process.env.NODE_ENV === 'production', 
     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    path: '/',
   },
+  proxy: true, 
 };
 
 if (sessionStore) {
@@ -78,6 +80,18 @@ app.use(session(sessionConfig));
 
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} - sessionID: ${req.sessionID}, userId: ${req.session.userId || 'none'}`);
+  console.log(`  Cookie header: ${req.headers.cookie || 'none'}`);
+  next();
+});
+
+app.use((req, res, next) => {
+  const originalSetHeader = res.setHeader;
+  res.setHeader = function(name, value) {
+    if (name.toLowerCase() === 'set-cookie') {
+      console.log(`[${new Date().toISOString()}] SET-COOKIE: ${value}`);
+    }
+    return originalSetHeader.call(this, name, value);
+  };
   next();
 });
 
