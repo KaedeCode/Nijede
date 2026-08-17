@@ -17,7 +17,6 @@ const corsOptions = {
   credentials: true,
 };
 app.use(cors(corsOptions));
-console.log('[APP] CORS origins:', corsOptions.origin);
 
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" },
@@ -25,9 +24,6 @@ app.use(helmet({
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-console.log('[APP] NODE_ENV:', process.env.NODE_ENV);
-console.log('[APP] DATABASE_URL exists?', !!process.env.DATABASE_URL);
 
 let sessionStore;
 try {
@@ -41,7 +37,6 @@ try {
       port: url.port || 3306,
       ssl: { rejectUnauthorized: false }
     });
-    console.log('[APP] MySQLStore initialized with DATABASE_URL');
   } else {
     sessionStore = new MySQLStore({
       host: process.env.DB_HOST,
@@ -49,7 +44,6 @@ try {
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
     });
-    console.log('[APP] MySQLStore initialized with individual DB env vars');
   }
 } catch (err) {
   console.error('[APP] MySQLStore init error:', err);
@@ -72,29 +66,9 @@ const sessionConfig = {
 
 if (sessionStore) {
   sessionConfig.store = sessionStore;
-  console.log('[APP] Using MySQLStore for sessions');
-} else {
-  console.warn('[APP] WARNING: Session store is MEMORY (no persistent storage). Sessions will be lost on restart.');
 }
 
 app.use(session(sessionConfig));
-
-app.use((req, res, next) => {
-  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} - sessionID: ${req.sessionID}, userId: ${req.session.userId || 'none'}`);
-  console.log(`  Cookie header: ${req.headers.cookie || 'none'}`);
-  next();
-});
-
-app.use((req, res, next) => {
-  const originalSetHeader = res.setHeader;
-  res.setHeader = function(name, value) {
-    if (name.toLowerCase() === 'set-cookie') {
-      console.log(`[${new Date().toISOString()}] SET-COOKIE: ${value}`);
-    }
-    return originalSetHeader.call(this, name, value);
-  };
-  next();
-});
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
