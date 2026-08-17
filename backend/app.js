@@ -8,6 +8,7 @@ const path = require('path');
 
 const authRoutes = require('./routes/auth');
 const profileRoutes = require('./routes/profile');
+const feedbackRoutes = require('./routes/feedback');
 
 const app = express();
 
@@ -62,11 +63,11 @@ const sessionConfig = {
   cookie: {
     maxAge: 1000 * 60 * 60 * 24,
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production', 
+    secure: process.env.NODE_ENV === 'production',
     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     path: '/',
   },
-  proxy: true, 
+  proxy: true,
 };
 
 if (sessionStore) {
@@ -99,6 +100,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use('/api', authRoutes);
 app.use('/api', profileRoutes);
+app.use('/api', feedbackRoutes);
 
 app.use((err, req, res, next) => {
   console.error('[APP] Global error:', err.stack);
