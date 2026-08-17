@@ -4,7 +4,7 @@ const { validationResult } = require('express-validator');
 exports.submitFeedback = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
+    return res.status(400).json({ error: errors.array()[0].msg });
   }
 
   const { message, type, email } = req.body;
@@ -13,7 +13,7 @@ exports.submitFeedback = async (req, res) => {
   try {
     const feedback = await Feedback.create({
       userId,
-      email,
+      email: email || null,
       message,
       type: type || 'general'
     });
