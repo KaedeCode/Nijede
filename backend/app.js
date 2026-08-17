@@ -67,6 +67,11 @@ if (sessionStore) {
 
 app.use(session(sessionConfig));
 
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} - sessionID: ${req.sessionID}, userId: ${req.session.userId || 'none'}`);
+  next();
+});
+
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use((req, res, next) => {

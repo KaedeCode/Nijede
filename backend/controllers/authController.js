@@ -16,7 +16,13 @@ exports.register = async (req, res) => {
     }
     const user = await User.create({ username, password });
     req.session.userId = user.id;
-    res.status(201).json({ id: user.id, username: user.username });
+    req.session.save((err) => {
+      if (err) {
+        console.error('Session save error:', err);
+        return res.status(500).json({ error: 'Ошибка сохранения сессии' });
+      }
+      res.status(201).json({ id: user.id, username: user.username });
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Ошибка сервера' });
@@ -35,7 +41,13 @@ exports.login = async (req, res) => {
       return res.status(401).json({ error: 'Неверное имя пользователя или пароль' });
     }
     req.session.userId = user.id;
-    res.json({ id: user.id, username: user.username });
+    req.session.save((err) => {
+      if (err) {
+        console.error('Session save error:', err);
+        return res.status(500).json({ error: 'Ошибка сохранения сессии' });
+      }
+      res.json({ id: user.id, username: user.username });
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Ошибка сервера' });
