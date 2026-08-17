@@ -8,16 +8,27 @@
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/menu.css">
     <link rel="icon" href="assets/images/logo.png" type="image/png">
+    <style>
+        .index-page #profileTopLeft {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+        }
+        .intro-content {
+            position: relative;
+        }
+    </style>
 </head>
-<body>
-    <div id="profileTopLeft"></div>
-
+<body class="index-page">
     <audio id="bgMusic" loop>
         <source src="assets/audio/music/main_theme.opus" type="audio/mpeg">
     </audio>
 
     <section id="intro" class="section">
         <div class="intro-content">
+            <div id="profileTopLeft"></div>
+
             <div class="intro-auth-container top-right" id="authButtons"></div>
 
             <div class="intro-center-block">
@@ -88,6 +99,7 @@
 
     <script src="js/main.js"></script>
     <script src="js/auth.js"></script>
+    <script src="js/rotate.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
