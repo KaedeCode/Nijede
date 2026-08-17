@@ -16,6 +16,7 @@ const corsOptions = {
   credentials: true,
 };
 app.use(cors(corsOptions));
+console.log('[APP] CORS origins:', corsOptions.origin);
 
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" },
@@ -23,6 +24,9 @@ app.use(helmet({
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+console.log('[APP] NODE_ENV:', process.env.NODE_ENV);
+console.log('[APP] DATABASE_URL exists?', !!process.env.DATABASE_URL);
 
 let sessionStore;
 try {
@@ -36,6 +40,7 @@ try {
       port: url.port || 3306,
       ssl: { rejectUnauthorized: false }
     });
+    console.log('[APP] MySQLStore initialized with DATABASE_URL');
   } else {
     sessionStore = new MySQLStore({
       host: process.env.DB_HOST,
@@ -43,9 +48,10 @@ try {
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
     });
+    console.log('[APP] MySQLStore initialized with individual DB env vars');
   }
 } catch (err) {
-  console.error('MySQLStore init error:', err);
+  console.error('[APP] MySQLStore init error:', err);
   sessionStore = undefined;
 }
 
@@ -56,13 +62,16 @@ const sessionConfig = {
   cookie: {
     maxAge: 1000 * 60 * 60 * 24,
     httpOnly: true,
-    secure: true,
-    sameSite: 'none',
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
   },
 };
 
 if (sessionStore) {
   sessionConfig.store = sessionStore;
+  console.log('[APP] Using MySQLStore for sessions');
+} else {
+  console.warn('[APP] WARNING: Session store is MEMORY (no persistent storage). Sessions will be lost on restart.');
 }
 
 app.use(session(sessionConfig));
@@ -74,20 +83,15 @@ app.use((req, res, next) => {
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-app.use((req, res, next) => {
-  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} - sessionID: ${req.sessionID}, userId: ${req.session.userId || 'none'}`);
-  next();
-});
-
 app.use('/api', authRoutes);
 app.use('/api', profileRoutes);
 
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  console.error('[APP] Global error:', err.stack);
   res.status(500).json({ error: 'Что-то пошло не так' });
 });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Сервер запущен на порту ${PORT}`);
+  console.log(`[APP] Server running on port ${PORT}`);
 });

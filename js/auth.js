@@ -6,6 +6,7 @@
     constructor() {
       this.currentUser = null;
       this.modalOverlay = null;
+      console.log('[AUTH] Initialized with API_BASE:', API_BASE);
       this.init();
     }
 
@@ -21,6 +22,7 @@
       if (stored) {
         try {
           this.currentUser = JSON.parse(stored);
+          console.log('[AUTH] Loaded user from localStorage:', this.currentUser);
         } catch {
           this.currentUser = null;
         }
@@ -32,27 +34,34 @@
     saveSession() {
       if (this.currentUser) {
         localStorage.setItem(SESSION_KEY, JSON.stringify(this.currentUser));
+        console.log('[AUTH] Saved user to localStorage:', this.currentUser);
       } else {
         localStorage.removeItem(SESSION_KEY);
+        console.log('[AUTH] Removed user from localStorage');
       }
     }
 
     async fetchCurrentUser() {
+      console.log('[AUTH] Fetching current user from /api/profile');
       try {
         const res = await fetch(`${API_BASE}/profile`, {
           credentials: 'include'
         });
+        console.log('[AUTH] Profile response status:', res.status);
         if (res.ok) {
           const user = await res.json();
+          console.log('[AUTH] Profile data received:', user);
           this.currentUser = user;
           this.saveSession();
           this.updateUI();
         } else {
+          console.log('[AUTH] Profile fetch not ok, status:', res.status);
           this.currentUser = null;
           this.saveSession();
           this.updateUI();
         }
-      } catch {
+      } catch (err) {
+        console.error('[AUTH] fetchCurrentUser error:', err);
         this.currentUser = null;
         this.saveSession();
         this.updateUI();
@@ -75,6 +84,7 @@
     }
 
     async register(username, password) {
+      console.log('[AUTH] Registering user:', username);
       try {
         const res = await fetch(`${API_BASE}/register`, {
           method: 'POST',
@@ -83,19 +93,23 @@
           body: JSON.stringify({ username, password })
         });
         const data = await res.json();
+        console.log('[AUTH] Register response:', data);
         if (!res.ok) {
           return { success: false, message: data.error || data.errors?.[0]?.msg || 'Ошибка регистрации' };
         }
         this.currentUser = data;
         this.saveSession();
         this.updateUI();
+        console.log('[AUTH] Register successful, user:', data);
         return { success: true, user: data };
       } catch (err) {
+        console.error('[AUTH] Register network error:', err);
         return { success: false, message: 'Ошибка сети' };
       }
     }
 
     async login(username, password) {
+      console.log('[AUTH] Logging in user:', username);
       try {
         const res = await fetch(`${API_BASE}/login`, {
           method: 'POST',
@@ -104,29 +118,37 @@
           body: JSON.stringify({ username, password })
         });
         const data = await res.json();
+        console.log('[AUTH] Login response:', data);
         if (!res.ok) {
           return { success: false, message: data.error || 'Неверные данные' };
         }
         this.currentUser = data;
         this.saveSession();
         this.updateUI();
+        console.log('[AUTH] Login successful, user:', data);
         return { success: true, user: data };
       } catch (err) {
+        console.error('[AUTH] Login network error:', err);
         return { success: false, message: 'Ошибка сети' };
       }
     }
 
     async logout() {
+      console.log('[AUTH] Logging out');
       try {
-        await fetch(`${API_BASE}/logout`, {
+        const res = await fetch(`${API_BASE}/logout`, {
           method: 'POST',
           credentials: 'include'
         });
-      } catch {}
+        console.log('[AUTH] Logout response status:', res.status);
+      } catch (err) {
+        console.error('[AUTH] Logout network error:', err);
+      }
       this.currentUser = null;
       this.saveSession();
       this.updateUI();
       this.closeModal();
+      console.log('[AUTH] User logged out, reloading');
       window.location.reload();
     }
 
@@ -143,6 +165,7 @@
     }
 
     updateUI() {
+      console.log('[AUTH] Updating UI, isAuthenticated:', this.isAuthenticated());
       const authButtons = document.getElementById('authButtons');
       if (authButtons) {
         if (this.isAuthenticated()) {
@@ -258,10 +281,12 @@
           e.preventDefault();
           const username = document.getElementById('loginUsername').value.trim();
           const password = document.getElementById('loginPassword').value.trim();
+          console.log('[AUTH] Login form submitted for:', username);
           const result = await this.login(username, password);
           if (result.success) {
             this.closeModal();
             await this.showAuthModal('Вход', 'Добро пожаловать, ' + username);
+            console.log('[AUTH] Login successful, reloading page');
             window.location.reload();
           } else {
             document.getElementById('loginError').textContent = result.message;
@@ -282,10 +307,12 @@
             document.getElementById('registerError').textContent = 'Пароли не совпадают';
             return;
           }
+          console.log('[AUTH] Register form submitted for:', username);
           const result = await this.register(username, password);
           if (result.success) {
             this.closeModal();
             await this.showAuthModal('Регистрация', 'Регистрация прошла успешно! Добро пожаловать, ' + username);
+            console.log('[AUTH] Register successful, reloading page');
             window.location.reload();
           } else {
             document.getElementById('registerError').textContent = result.message;
