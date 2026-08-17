@@ -25,40 +25,52 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 let sessionStore;
-if (process.env.DATABASE_URL) {
-  sessionStore = new MySQLStore({
-    host: new URL(process.env.DATABASE_URL).hostname,
-    user: new URL(process.env.DATABASE_URL).username,
-    password: new URL(process.env.DATABASE_URL).password,
-    database: new URL(process.env.DATABASE_URL).pathname.slice(1),
-    port: new URL(process.env.DATABASE_URL).port || 3306,
-  });
-} else {
-  sessionStore = new MySQLStore({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-  });
+try {
+  if (process.env.DATABASE_URL) {
+    const url = new URL(process.env.DATABASE_URL);
+    sessionStore = new MySQLStore({
+      host: url.hostname,
+      user: url.username,
+      password: url.password,
+      database: url.pathname.slice(1),
+      port: url.port || 3306,
+      ssl: { rejectUnauthorized: false }
+    });
+  } else {
+    sessionStore = new MySQLStore({
+      host: process.env.DB_HOST,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+    });
+  }
+} catch (err) {
+  console.error('MySQLStore init error:', err);
+  sessionStore = undefined;
 }
 
-app.use(session({
-  secret: process.env.SESSION_SECRET,
-  store: sessionStore,
+const sessionConfig = {
+  secret: process.env.SESSION_SECRET || 'default-secret',
   resave: false,
   saveUninitialized: false,
   cookie: {
     maxAge: 1000 * 60 * 60 * 24,
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    secure: true,
+    sameSite: 'none',
   },
-}));
+};
+
+if (sessionStore) {
+  sessionConfig.store = sessionStore;
+}
+
+app.use(session(sessionConfig));
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use((req, res, next) => {
-  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} - sessionID: ${req.sessionID}, userId: ${req.session.userId || 'none'}`);
   next();
 });
 
