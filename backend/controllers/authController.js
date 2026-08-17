@@ -18,9 +18,10 @@ exports.register = async (req, res) => {
     req.session.userId = user.id;
     req.session.save((err) => {
       if (err) {
-        console.error('Session save error:', err);
+        console.error('Session save error on register:', err);
         return res.status(500).json({ error: 'Ошибка сохранения сессии' });
       }
+      console.log('Register success, session saved, userId:', req.session.userId);
       res.status(201).json({ id: user.id, username: user.username });
     });
   } catch (err) {
@@ -43,9 +44,10 @@ exports.login = async (req, res) => {
     req.session.userId = user.id;
     req.session.save((err) => {
       if (err) {
-        console.error('Session save error:', err);
+        console.error('Session save error on login:', err);
         return res.status(500).json({ error: 'Ошибка сохранения сессии' });
       }
+      console.log('Login success, session saved, userId:', req.session.userId);
       res.json({ id: user.id, username: user.username });
     });
   } catch (err) {
