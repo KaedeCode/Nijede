@@ -5,6 +5,7 @@ const MySQLStore = require('express-mysql-session')(session);
 const cors = require('cors');
 const helmet = require('helmet');
 const path = require('path');
+const db = require('./db');
 
 const authRoutes = require('./routes/auth');
 const profileRoutes = require('./routes/profile');
@@ -80,6 +81,19 @@ app.use((err, req, res, next) => {
   console.error('[APP] Global error:', err.stack);
   res.status(500).json({ error: 'Что-то пошло не так' });
 });
+
+async function keepAlive() {
+  try {
+    await db.raw('SELECT 1');
+    console.log('[KEEPALIVE] DB ping successful');
+  } catch (err) {
+    console.error('[KEEPALIVE] DB ping failed:', err.message);
+  }
+}
+
+const KEEPALIVE_INTERVAL = 2 * 60 * 60 * 1000;
+setInterval(keepAlive, KEEPALIVE_INTERVAL);
+keepAlive();
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
