@@ -21,7 +21,8 @@ exports.updateProfile = async (req, res) => {
   }
 
   if (birthdate !== undefined && birthdate !== null) {
-    updateData.birthdate = birthdate || null;
+    // Если пришла пустая строка или null – сохраняем NULL, иначе дату
+    updateData.birthdate = (birthdate && birthdate !== '') ? birthdate : null;
   }
 
   if (req.file) {

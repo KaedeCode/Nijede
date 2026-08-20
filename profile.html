@@ -406,7 +406,11 @@
                 if (!currentUser) return;
                 usernameInput.value = currentUser.username || '';
                 pronounsInput.value = currentUser.pronouns || '';
-                birthInput.value = currentUser.birthdate || '';
+                let birthValue = currentUser.birthdate;
+                if (birthValue && typeof birthValue === 'string' && birthValue.includes('T')) {
+                    birthValue = birthValue.split('T')[0];
+                }
+                birthInput.value = birthValue || '';
                 bioInput.value = currentUser.bio || '';
                 displayName.textContent = currentUser.username || 'Пользователь';
                 createdSpan.textContent = currentUser.created_at ? new Date(currentUser.created_at).toLocaleString() : '—';

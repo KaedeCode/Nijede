@@ -85,7 +85,7 @@ exports.getProfile = async (req, res) => {
       avatar_url: user.avatar_url,
       pronouns: user.pronouns,
       bio: user.bio,
-      birthdate: user.birthdate,
+      birthdate: user.birthdate ? user.birthdate.toISOString().split('T')[0] : null,
       created_at: user.created_at
     });
   } catch (err) {

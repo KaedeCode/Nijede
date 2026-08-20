@@ -2,6 +2,12 @@
   const SESSION_KEY = 'auth_current_user';
   const API_BASE = window.API_BASE || 'http://localhost:3000/api';
 
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
   class Auth {
     constructor() {
       this.currentUser = null;
@@ -176,7 +182,9 @@
       if (avatarFile) formData.append('avatar', avatarFile);
       if (pronouns !== undefined) formData.append('pronouns', pronouns);
       if (bio !== undefined) formData.append('bio', bio);
-      if (birthdate !== undefined) formData.append('birthdate', birthdate);
+      if (birthdate && birthdate !== '') {
+        formData.append('birthdate', birthdate);
+      }
 
       try {
         const res = await fetch(`${API_BASE}/profile`, {
@@ -217,8 +225,9 @@
       const authButtons = document.getElementById('authButtons');
       if (authButtons) {
         if (this.isAuthenticated()) {
+          const escapedUsername = escapeHtml(this.currentUser.username);
           authButtons.innerHTML = `
-            <span class="auth-user">${this.currentUser.username}</span>
+            <span class="auth-user">${escapedUsername}</span>
             <button class="auth-btn logout-btn" id="logoutBtnMain">Выйти</button>
           `;
           const logoutBtn = authButtons.querySelector('#logoutBtnMain');
@@ -240,12 +249,13 @@
         if (this.isAuthenticated()) {
           const avatarUrl = this.currentUser.avatar_url || '';
           const initial = this.currentUser.username.charAt(0).toUpperCase();
+          const escapedUsername = escapeHtml(this.currentUser.username);
           profileTopLeft.innerHTML = `
             <a href="${this.getProfileUrl()}" class="profile-top-btn">
               <span class="profile-top-avatar">
                 <img src="${avatarUrl}" alt="Avatar" class="profile-top-avatar-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2232%22 height=%2232%22 viewBox=%220 0 32 32%22%3E%3Ccircle cx=%2216%22 cy=%2216%22 r=%2216%22 fill=%22%239d4edd%22/%3E%3Ctext x=%2216%22 y=%2222%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2216%22 font-family=%22Arial%22%3E${initial}%3C/text%3E%3C/svg%3E'">
               </span>
-              <span class="profile-top-name">${this.currentUser.username}</span>
+              <span class="profile-top-name">${escapedUsername}</span>
             </a>
           `;
         } else {
@@ -258,12 +268,13 @@
         if (this.isAuthenticated()) {
           const avatarUrl = this.currentUser.avatar_url || '';
           const initial = this.currentUser.username.charAt(0).toUpperCase();
+          const escapedUsername = escapeHtml(this.currentUser.username);
           sidebarAuth.innerHTML = `
             <div class="sidebar-user">
               <div class="sidebar-avatar">
                 <img src="${avatarUrl}" alt="Avatar" class="sidebar-avatar-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2264%22 height=%2264%22 viewBox=%220 0 64 64%22%3E%3Ccircle cx=%2232%22 cy=%2232%22 r=%2232%22 fill=%22%239d4edd%22/%3E%3Ctext x=%2232%22 y=%2242%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2232%22 font-family=%22Arial%22%3E${initial}%3C/text%3E%3C/svg%3E'">
               </div>
-              <span class="sidebar-username">${this.currentUser.username}</span>
+              <span class="sidebar-username">${escapedUsername}</span>
               <a href="${this.getProfileUrl()}" class="auth-btn profile-btn">Профиль</a>
               <button class="auth-btn logout-btn sidebar-logout">Выйти</button>
             </div>
