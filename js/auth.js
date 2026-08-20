@@ -222,28 +222,6 @@
     updateUI() {
       console.log('[AUTH] Updating UI, isAuthenticated:', this.isAuthenticated());
 
-      const authButtons = document.getElementById('authButtons');
-      if (authButtons) {
-        if (this.isAuthenticated()) {
-          const escapedUsername = escapeHtml(this.currentUser.username);
-          authButtons.innerHTML = `
-            <span class="auth-user">${escapedUsername}</span>
-            <button class="auth-btn logout-btn" id="logoutBtnMain">Выйти</button>
-          `;
-          const logoutBtn = authButtons.querySelector('#logoutBtnMain');
-          if (logoutBtn) {
-            logoutBtn.addEventListener('click', () => this.logoutWithConfirm());
-          }
-        } else {
-          authButtons.innerHTML = `
-            <button class="auth-btn login-btn" id="loginBtnMain">Вход</button>
-            <button class="auth-btn register-btn" id="registerBtnMain">Регистрация</button>
-          `;
-          document.getElementById('loginBtnMain')?.addEventListener('click', () => this.showLoginModal());
-          document.getElementById('registerBtnMain')?.addEventListener('click', () => this.showRegisterModal());
-        }
-      }
-
       const profileTopLeft = document.getElementById('profileTopLeft');
       if (profileTopLeft) {
         if (this.isAuthenticated()) {
@@ -251,13 +229,20 @@
           const initial = this.currentUser.username.charAt(0).toUpperCase();
           const escapedUsername = escapeHtml(this.currentUser.username);
           profileTopLeft.innerHTML = `
-            <a href="${this.getProfileUrl()}" class="profile-top-btn">
-              <span class="profile-top-avatar">
-                <img src="${avatarUrl}" alt="Avatar" class="profile-top-avatar-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2232%22 height=%2232%22 viewBox=%220 0 32 32%22%3E%3Ccircle cx=%2216%22 cy=%2216%22 r=%2216%22 fill=%22%239d4edd%22/%3E%3Ctext x=%2216%22 y=%2222%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2216%22 font-family=%22Arial%22%3E${initial}%3C/text%3E%3C/svg%3E'">
-              </span>
-              <span class="profile-top-name">${escapedUsername}</span>
-            </a>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <a href="${this.getProfileUrl()}" class="profile-top-btn">
+                <span class="profile-top-avatar">
+                  <img src="${avatarUrl}" alt="Avatar" class="profile-top-avatar-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2232%22 height=%2232%22 viewBox=%220 0 32 32%22%3E%3Ccircle cx=%2216%22 cy=%2216%22 r=%2216%22 fill=%22%239d4edd%22/%3E%3Ctext x=%2216%22 y=%2222%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2216%22 font-family=%22Arial%22%3E${initial}%3C/text%3E%3C/svg%3E'">
+                </span>
+                <span class="profile-top-name">${escapedUsername}</span>
+              </a>
+              <button class="auth-btn logout-btn" id="profileLogoutMain" style="font-size: 0.8rem; padding: 6px 14px;">Выйти</button>
+            </div>
           `;
+          const logoutBtn = profileTopLeft.querySelector('#profileLogoutMain');
+          if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => this.logoutWithConfirm());
+          }
         } else {
           profileTopLeft.innerHTML = '';
         }

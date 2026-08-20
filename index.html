@@ -29,22 +29,25 @@
         <div class="intro-content">
             <div id="profileTopLeft"></div>
 
-            <div class="intro-auth-container top-right" id="authButtons"></div>
+            <!-- Поиск в правом верхнем углу -->
+            <div class="intro-search-container top-right">
+                <input type="text" id="introSearch" class="intro-search-input" placeholder="🔍 Поиск инструментов...">
+                <div id="introSearchDropdown" class="search-dropdown"></div>
+            </div>
 
             <div class="intro-center-block">
                 <h1>Мир Музыкальных Инструментов</h1>
                 <p>Добро пожаловать в интерактивное путешествие по истории и культуре музыки.</p>
                 <p>Вместе с Каэде и Ниджикой вы исследуете удивительный мир звуков.</p>
 
-                <div class="intro-search-container">
-                    <input type="text" id="introSearch" class="intro-search-input" placeholder="🔍 Поиск инструментов...">
-                    <div id="introSearchDropdown" class="search-dropdown"></div>
-                </div>
-
                 <div class="action-buttons-vertical">
                     <a href="#kaede" class="start-btn">Начать путешествие</a>
                     <a href="#" class="info-btn" onclick="showPopup()">О проекте</a>
                 </div>
+            </div>
+
+            <div class="intro-feedback bottom-left" onclick="showFeedbackModal()" style="position: absolute; bottom: 30px; left: 40px; z-index: 10; background: rgba(10,10,18,0.6); padding: 10px 20px; border-radius: 50px; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.05); cursor: pointer; color: #fff; display: flex; align-items: center; gap: 8px;">
+                💬 Обратная связь
             </div>
 
             <div class="intro-music-controls bottom-right">
