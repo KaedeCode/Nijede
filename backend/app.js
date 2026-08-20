@@ -91,7 +91,7 @@ async function keepAlive() {
   }
 }
 
-const KEEPALIVE_INTERVAL = 2 * 60 * 60 * 1000;
+const KEEPALIVE_INTERVAL = 5 * 60 * 1000;
 setInterval(keepAlive, KEEPALIVE_INTERVAL);
 keepAlive();
 
