@@ -82,7 +82,11 @@ exports.getProfile = async (req, res) => {
     res.json({
       id: user.id,
       username: user.username,
-      avatar_url: user.avatar_url
+      avatar_url: user.avatar_url,
+      pronouns: user.pronouns,
+      bio: user.bio,
+      birthdate: user.birthdate,
+      created_at: user.created_at
     });
   } catch (err) {
     console.error('[GET_PROFILE] Error:', err);

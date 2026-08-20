@@ -152,6 +152,53 @@
       window.location.reload();
     }
 
+    async logoutWithConfirm() {
+      const result = await Swal.fire({
+        title: 'Выход из аккаунта',
+        text: 'Вы уверены, что хотите выйти?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Выйти',
+        cancelButtonText: 'Отмена',
+        background: '#1a1a2e',
+        color: '#fff',
+        confirmButtonColor: '#cc4444',
+        cancelButtonColor: '#6c6c8a'
+      });
+      if (result.isConfirmed) {
+        await this.logout();
+      }
+    }
+
+    async updateProfile(username, avatarFile, pronouns, bio, birthdate) {
+      const formData = new FormData();
+      if (username) formData.append('username', username);
+      if (avatarFile) formData.append('avatar', avatarFile);
+      if (pronouns !== undefined) formData.append('pronouns', pronouns);
+      if (bio !== undefined) formData.append('bio', bio);
+      if (birthdate !== undefined) formData.append('birthdate', birthdate);
+
+      try {
+        const res = await fetch(`${API_BASE}/profile`, {
+          method: 'PUT',
+          credentials: 'include',
+          body: formData
+        });
+        if (!res.ok) {
+          const data = await res.json();
+          throw new Error(data.error || 'Ошибка обновления');
+        }
+        const updated = await res.json();
+        this.currentUser = { ...this.currentUser, ...updated };
+        this.saveSession();
+        this.updateUI();
+        return { success: true, user: this.currentUser };
+      } catch (err) {
+        console.error('[AUTH] Update profile error:', err);
+        return { success: false, message: err.message };
+      }
+    }
+
     async showAuthModal(title, text, icon = 'success') {
       await Swal.fire({
         title: title,
@@ -166,6 +213,7 @@
 
     updateUI() {
       console.log('[AUTH] Updating UI, isAuthenticated:', this.isAuthenticated());
+
       const authButtons = document.getElementById('authButtons');
       if (authButtons) {
         if (this.isAuthenticated()) {
@@ -175,7 +223,7 @@
           `;
           const logoutBtn = authButtons.querySelector('#logoutBtnMain');
           if (logoutBtn) {
-            logoutBtn.addEventListener('click', () => this.logout());
+            logoutBtn.addEventListener('click', () => this.logoutWithConfirm());
           }
         } else {
           authButtons.innerHTML = `
@@ -190,7 +238,16 @@
       const profileTopLeft = document.getElementById('profileTopLeft');
       if (profileTopLeft) {
         if (this.isAuthenticated()) {
-          profileTopLeft.innerHTML = `<a href="${this.getProfileUrl()}" class="auth-btn profile-top-btn">Профиль</a>`;
+          const avatarUrl = this.currentUser.avatar_url || '';
+          const initial = this.currentUser.username.charAt(0).toUpperCase();
+          profileTopLeft.innerHTML = `
+            <a href="${this.getProfileUrl()}" class="profile-top-btn">
+              <span class="profile-top-avatar">
+                <img src="${avatarUrl}" alt="Avatar" class="profile-top-avatar-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2232%22 height=%2232%22 viewBox=%220 0 32 32%22%3E%3Ccircle cx=%2216%22 cy=%2216%22 r=%2216%22 fill=%22%239d4edd%22/%3E%3Ctext x=%2216%22 y=%2222%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2216%22 font-family=%22Arial%22%3E${initial}%3C/text%3E%3C/svg%3E'">
+              </span>
+              <span class="profile-top-name">${this.currentUser.username}</span>
+            </a>
+          `;
         } else {
           profileTopLeft.innerHTML = '';
         }
@@ -199,14 +256,19 @@
       const sidebarAuth = document.querySelector('.sidebar-auth');
       if (sidebarAuth) {
         if (this.isAuthenticated()) {
+          const avatarUrl = this.currentUser.avatar_url || '';
+          const initial = this.currentUser.username.charAt(0).toUpperCase();
           sidebarAuth.innerHTML = `
             <div class="sidebar-user">
+              <div class="sidebar-avatar">
+                <img src="${avatarUrl}" alt="Avatar" class="sidebar-avatar-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2264%22 height=%2264%22 viewBox=%220 0 64 64%22%3E%3Ccircle cx=%2232%22 cy=%2232%22 r=%2232%22 fill=%22%239d4edd%22/%3E%3Ctext x=%2232%22 y=%2242%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2232%22 font-family=%22Arial%22%3E${initial}%3C/text%3E%3C/svg%3E'">
+              </div>
               <span class="sidebar-username">${this.currentUser.username}</span>
               <a href="${this.getProfileUrl()}" class="auth-btn profile-btn">Профиль</a>
               <button class="auth-btn logout-btn sidebar-logout">Выйти</button>
             </div>
           `;
-          sidebarAuth.querySelector('.sidebar-logout')?.addEventListener('click', () => this.logout());
+          sidebarAuth.querySelector('.sidebar-logout')?.addEventListener('click', () => this.logoutWithConfirm());
         } else {
           sidebarAuth.innerHTML = `
             <button class="auth-btn login-btn sidebar-login">Вход</button>

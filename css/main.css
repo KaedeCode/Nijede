@@ -1054,3 +1054,40 @@ html {
         text-align: center;
     }
 }
+
+.profile-top-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(157, 78, 221, 0.2);
+    border: 2px solid #9d4edd;
+    border-radius: 40px;
+    padding: 6px 16px 6px 6px;
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+    backdrop-filter: blur(4px);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+.profile-top-btn:hover {
+    background: #9d4edd;
+    transform: scale(1.03);
+    box-shadow: 0 0 20px rgba(157,78,221,0.4);
+}
+.profile-top-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #1a1a2e;
+    flex-shrink: 0;
+}
+.profile-top-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.profile-top-name {
+    font-size: 0.95rem;
+}

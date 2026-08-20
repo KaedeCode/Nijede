@@ -7,6 +7,276 @@
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/menu.css">
     <link rel="icon" href="assets/images/logo.png" type="image/png">
+    <style>
+        body {
+            overflow-y: auto !important;
+            height: auto !important;
+            min-height: 100vh;
+        }
+        .profile-page {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a0b2e, #0d0519);
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        .profile-card {
+            background: rgba(20, 20, 35, 0.92);
+            backdrop-filter: blur(16px);
+            border-radius: 40px;
+            padding: 50px 60px;
+            width: 50vw;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.7), 0 0 0 2px rgba(157,78,221,0.2);
+            color: #fff;
+            transition: transform 0.3s ease;
+        }
+        .profile-card:hover {
+            transform: translateY(-2px);
+        }
+        .profile-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .profile-avatar-wrapper {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 4px solid #9d4edd;
+            box-shadow: 0 0 30px rgba(157,78,221,0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #1a1a2e;
+            flex-shrink: 0;
+        }
+        .profile-avatar-wrapper:hover {
+            transform: scale(1.05);
+            border-color: #c77dff;
+            box-shadow: 0 0 50px rgba(157,78,221,0.6);
+        }
+        .profile-avatar-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .profile-avatar-wrapper .avatar-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 64px;
+            font-weight: bold;
+            color: #fff;
+            background: #9d4edd;
+        }
+        .profile-avatar-input {
+            display: none;
+        }
+        .profile-avatar-label {
+            margin-top: 12px;
+            font-size: 0.95rem;
+            color: #c77dff;
+            cursor: pointer;
+            transition: color 0.2s;
+            font-weight: 500;
+        }
+        .profile-avatar-label:hover {
+            color: #fff;
+        }
+        .profile-username {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-top: 12px;
+            background: linear-gradient(135deg, #9d4edd, #c77dff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .profile-row {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        .profile-row .profile-field {
+            flex: 1;
+            min-width: 120px;
+        }
+        .profile-field {
+            margin-bottom: 22px;
+        }
+        .profile-field label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: #c0c0d0;
+            font-size: 0.95rem;
+        }
+        .profile-field input,
+        .profile-field textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 30px;
+            border: 1px solid #444;
+            background: #0d0d1a;
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            transition: border 0.3s, box-shadow 0.3s;
+            font-family: inherit;
+        }
+        .profile-field textarea {
+            border-radius: 20px;
+            resize: vertical;
+            min-height: 80px;
+        }
+        .profile-field input:focus,
+        .profile-field textarea:focus {
+            border-color: #9d4edd;
+            box-shadow: 0 0 0 3px rgba(157,78,221,0.2);
+        }
+        .profile-field .info-text {
+            color: #888;
+            font-size: 0.85rem;
+            margin-top: 4px;
+        }
+        .profile-compositions {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+        .profile-compositions h3 {
+            font-size: 1.3rem;
+            color: #c77dff;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .profile-compositions .compositions-placeholder {
+            background: rgba(255,255,255,0.03);
+            border-radius: 20px;
+            padding: 40px 20px;
+            text-align: center;
+            color: #666;
+            border: 2px dashed rgba(157,78,221,0.2);
+        }
+        .profile-compositions .compositions-placeholder span {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 10px;
+        }
+        .profile-compositions .compositions-placeholder p {
+            font-size: 1.1rem;
+            margin: 0;
+        }
+        .profile-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 30px;
+        }
+        .profile-actions .auth-btn {
+            text-align: center;
+            padding: 14px 20px;
+            border-radius: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            color: #fff;
+            background: rgba(157,78,221,0.2);
+            border: 2px solid #9d4edd;
+            font-size: 1rem;
+        }
+        .profile-actions .auth-btn:hover {
+            background: #9d4edd;
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(157,78,221,0.4);
+        }
+        .profile-actions .back-btn {
+            width: 100%;
+            background: rgba(255,255,255,0.08);
+            border-color: #666;
+        }
+        .profile-actions .back-btn:hover {
+            background: #444;
+            border-color: #888;
+        }
+        .profile-actions .save-btn {
+            background: #9d4edd;
+            border-color: #9d4edd;
+        }
+        .profile-actions .save-btn:hover {
+            background: #c77dff;
+            border-color: #c77dff;
+        }
+        .profile-actions .logout-btn {
+            background: rgba(200,50,50,0.2);
+            border-color: #cc4444;
+        }
+        .profile-actions .logout-btn:hover {
+            background: #cc4444;
+            border-color: #cc4444;
+        }
+        .profile-actions .action-row {
+            display: flex;
+            gap: 16px;
+            width: 100%;
+        }
+        .profile-actions .action-row .auth-btn {
+            flex: 1;
+        }
+        .profile-message {
+            margin-top: 16px;
+            padding: 12px 18px;
+            border-radius: 16px;
+            background: rgba(157,78,221,0.1);
+            border-left: 4px solid #9d4edd;
+            color: #c0c0d0;
+            display: none;
+            font-size: 0.95rem;
+        }
+        .profile-message.success {
+            border-left-color: #4caf50;
+            background: rgba(76,175,80,0.1);
+            color: #a5d6a7;
+        }
+        .profile-message.error {
+            border-left-color: #f44336;
+            background: rgba(244,67,54,0.1);
+            color: #ef9a9a;
+        }
+        .profile-message.show {
+            display: block;
+        }
+        @media (max-width: 600px) {
+            .profile-card {
+                padding: 30px 20px;
+            }
+            .profile-avatar-wrapper {
+                width: 120px;
+                height: 120px;
+            }
+            .profile-username {
+                font-size: 1.8rem;
+            }
+            .profile-actions .auth-btn {
+                font-size: 0.9rem;
+                padding: 12px;
+            }
+            .profile-row {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="burger-button">☰</div>
@@ -36,18 +306,66 @@
         </div>
     </div>
 
-    <div class="profile-container">
+    <div class="profile-page">
         <div class="profile-card">
-            <h1>Мой профиль</h1>
-            <div id="profileContent">
-                <p><strong>Имя пользователя:</strong> <span id="profileUsername">—</span></p>
-                <p><strong>Дата регистрации:</strong> <span id="profileCreated">—</span></p>
-                <p><strong>ID:</strong> <span id="profileId">—</span></p>
-                <div class="profile-actions">
-                    <button id="profileLogout" class="auth-btn logout-btn">Выйти</button>
-                    <button id="profileEdit" class="auth-btn" style="background: #9d4edd; border-color: #9d4edd;">Редактировать (скоро)</button>
+            <div class="profile-header">
+                <div class="profile-avatar-wrapper" id="avatarWrapper">
+                    <img id="profileAvatar" src="" alt="Аватар" style="display:none;">
+                    <div class="avatar-placeholder" id="avatarPlaceholder">?</div>
+                </div>
+                <label for="avatarInput" class="profile-avatar-label">Изменить аватар</label>
+                <input type="file" id="avatarInput" class="profile-avatar-input" accept="image/*">
+                <div class="profile-username" id="profileDisplayName">Пользователь</div>
+            </div>
+
+            <div class="profile-row">
+                <div class="profile-field">
+                    <label for="profileUsernameInput">Имя</label>
+                    <input type="text" id="profileUsernameInput" placeholder="Ваше имя">
+                </div>
+                <div class="profile-field">
+                    <label for="profilePronounsInput">Местоимения</label>
+                    <input type="text" id="profilePronounsInput" placeholder="она/её">
+                </div>
+                <div class="profile-field">
+                    <label for="profileBirthInput">Дата рождения</label>
+                    <input type="date" id="profileBirthInput">
                 </div>
             </div>
+
+            <div class="profile-field">
+                <label for="profileBioInput">О себе</label>
+                <textarea id="profileBioInput" placeholder="Расскажите о себе, своих музыкальных предпочтениях..."></textarea>
+            </div>
+
+            <div class="profile-field">
+                <label>Дата регистрации</label>
+                <div style="padding: 8px 0; color: #aaa;" id="profileCreated">—</div>
+            </div>
+
+            <div class="profile-field">
+                <label>ID пользователя</label>
+                <div style="padding: 8px 0; color: #aaa;" id="profileId">—</div>
+            </div>
+
+            <div class="profile-compositions">
+                <h3>🎵 Мои композиции</h3>
+                <div class="compositions-placeholder">
+                    <span>🎼</span>
+                    <p>Ваши композиции появятся здесь</p>
+                    <p style="font-size: 0.9rem; color: #555;">Скоро вы сможете сохранять свои мелодии</p>
+                </div>
+            </div>
+
+            <div class="profile-actions">
+                <button class="auth-btn back-btn" id="profileBack">Вернуться</button>
+                <div class="action-row">
+                    <button class="auth-btn save-btn" id="profileSave">Сохранить</button>
+                    <button class="auth-btn logout-btn" id="profileLogout">Выйти</button>
+                </div>
+            </div>
+
+            <div id="profileMessage" class="profile-message"></div>
         </div>
     </div>
 
@@ -67,41 +385,120 @@
             }
 
             const user = auth.getUser();
-            document.getElementById('profileUsername').textContent = user.username;
-            document.getElementById('profileId').textContent = user.id;
-            document.getElementById('profileCreated').textContent = user.created ? new Date(user.created).toLocaleString() : '—';
+            const usernameInput = document.getElementById('profileUsernameInput');
+            const pronounsInput = document.getElementById('profilePronounsInput');
+            const birthInput = document.getElementById('profileBirthInput');
+            const bioInput = document.getElementById('profileBioInput');
+            const displayName = document.getElementById('profileDisplayName');
+            const createdSpan = document.getElementById('profileCreated');
+            const idSpan = document.getElementById('profileId');
+            const avatarImg = document.getElementById('profileAvatar');
+            const avatarPlaceholder = document.getElementById('avatarPlaceholder');
+            const avatarWrapper = document.getElementById('avatarWrapper');
+            const avatarInput = document.getElementById('avatarInput');
+            const saveBtn = document.getElementById('profileSave');
+            const logoutBtn = document.getElementById('profileLogout');
+            const backBtn = document.getElementById('profileBack');
+            const msgDiv = document.getElementById('profileMessage');
 
-            document.getElementById('profileLogout').addEventListener('click', function() {
-                auth.logout();
+            function updateProfileUI() {
+                const currentUser = auth.getUser();
+                if (!currentUser) return;
+                usernameInput.value = currentUser.username || '';
+                pronounsInput.value = currentUser.pronouns || '';
+                birthInput.value = currentUser.birthdate || '';
+                bioInput.value = currentUser.bio || '';
+                displayName.textContent = currentUser.username || 'Пользователь';
+                createdSpan.textContent = currentUser.created_at ? new Date(currentUser.created_at).toLocaleString() : '—';
+                idSpan.textContent = currentUser.id || '—';
+
+                const avatarUrl = currentUser.avatar_url || '';
+                if (avatarUrl) {
+                    avatarImg.src = avatarUrl;
+                    avatarImg.style.display = 'block';
+                    avatarPlaceholder.style.display = 'none';
+                } else {
+                    avatarImg.style.display = 'none';
+                    avatarPlaceholder.style.display = 'flex';
+                    avatarPlaceholder.textContent = (currentUser.username || '?').charAt(0).toUpperCase();
+                }
+            }
+            updateProfileUI();
+
+            function showMessage(text, type = 'info') {
+                msgDiv.textContent = text;
+                msgDiv.className = 'profile-message show';
+                if (type === 'success') msgDiv.classList.add('success');
+                else if (type === 'error') msgDiv.classList.add('error');
+                setTimeout(() => {
+                    msgDiv.classList.remove('show');
+                }, 5000);
+            }
+
+            avatarWrapper.addEventListener('click', () => avatarInput.click());
+
+            avatarInput.addEventListener('change', function(e) {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(ev) {
+                        avatarImg.src = ev.target.result;
+                        avatarImg.style.display = 'block';
+                        avatarPlaceholder.style.display = 'none';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            backBtn.addEventListener('click', function() {
                 window.location.href = 'index.html';
             });
 
-            document.getElementById('profileEdit').addEventListener('click', function() {
-                alert('Редактирование профиля будет доступно позже.');
+            saveBtn.addEventListener('click', async function() {
+                const newUsername = usernameInput.value.trim();
+                const newPronouns = pronounsInput.value.trim();
+                const newBirthdate = birthInput.value || null;
+                const newBio = bioInput.value.trim();
+                const fileInput = avatarInput;
+                const file = fileInput.files[0];
+
+                if (!newUsername && !file && !newPronouns && !newBio && !newBirthdate) {
+                    showMessage('Нет изменений для сохранения', 'info');
+                    return;
+                }
+
+                if (newUsername && newUsername.length < 3) {
+                    showMessage('Имя должно содержать минимум 3 символа', 'error');
+                    return;
+                }
+
+                saveBtn.disabled = true;
+                saveBtn.textContent = '⏳ Сохранение...';
+
+                const result = await auth.updateProfile(
+                    newUsername || null,
+                    file || null,
+                    newPronouns || null,
+                    newBio || null,
+                    newBirthdate || null
+                );
+
+                saveBtn.disabled = false;
+                saveBtn.textContent = '💾 Сохранить';
+
+                if (result.success) {
+                    showMessage('Профиль успешно обновлён!', 'success');
+                    updateProfileUI();
+                    avatarInput.value = '';
+                } else {
+                    showMessage(result.message || 'Ошибка обновления', 'error');
+                }
             });
 
-            if (auth.updateUI) auth.updateUI();
-
-            const audio = document.getElementById('bgMusic');
-            if (audio) {
-                audio.volume = (document.getElementById('volumeSlider')?.value || 30) / 100;
-            }
+            logoutBtn.addEventListener('click', function() {
+                auth.logoutWithConfirm();
+            });
         });
-
-        function toggleMusic() {
-            const bgMusic = document.getElementById('bgMusic');
-            if (bgMusic) {
-                if (bgMusic.paused) bgMusic.play();
-                else bgMusic.pause();
-            }
-        }
-
-        function setVolume(value) {
-            const bgMusic = document.getElementById('bgMusic');
-            if (bgMusic) {
-                bgMusic.volume = value / 100;
-            }
-        }
     </script>
 </body>
 </html>
