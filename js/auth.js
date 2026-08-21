@@ -244,7 +244,10 @@
             logoutBtn.addEventListener('click', () => this.logoutWithConfirm());
           }
         } else {
-          profileTopLeft.innerHTML = '';
+          profileTopLeft.innerHTML = `
+            <button class="auth-btn login-btn" data-auth="login" style="margin-right: 8px;">Вход</button>
+            <button class="auth-btn register-btn" data-auth="register">Регистрация</button>
+          `;
         }
       }
 
