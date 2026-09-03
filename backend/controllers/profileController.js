@@ -38,8 +38,8 @@ exports.updateProfile = async (req, res) => {
       const isGif = req.file.mimetype === 'image/gif';
 
       const buffer = await sharp(req.file.buffer, { animated: isGif })
-        .resize(200, 200, { fit: 'cover' })
-        .webp({ quality: 80 })
+        .resize(300, 300, { fit: 'cover' })
+        .webp({ quality: 90 })
         .toBuffer();
 
       fs.writeFileSync(path.join(uploadDir, fileName), buffer);
