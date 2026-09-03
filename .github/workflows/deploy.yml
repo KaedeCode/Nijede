@@ -20,9 +20,9 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} '
             set -e
-            cd ~/projects/nijede/backend
+            cd ~/projects/nijede
             git pull origin main
+            cd backend
             npm install
-            npm run build
             pm2 restart nijede-backend
           '

@@ -1,6 +1,6 @@
 (function() {
   const SESSION_KEY = 'auth_current_user';
-  const API_BASE = window.API_BASE || 'http://localhost:3000/api';
+  const API_BASE = window.API_BASE || '/api';
 
   function escapeHtml(text) {
     const div = document.createElement('div');

@@ -140,9 +140,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-window.API_BASE = window.location.hostname === 'localhost' 
-  ? 'http://localhost:3000/api' 
-  : 'https://nijede-backend.onrender.com/api';
+window.API_BASE = window.location.hostname === 'localhost'
+  ? 'http://localhost:3000/api'
+  : '/api';
 
 function showFeedbackModal() {
   Swal.fire({

@@ -21,12 +21,11 @@ exports.updateProfile = async (req, res) => {
   }
 
   if (birthdate !== undefined && birthdate !== null) {
-    // Если пришла пустая строка или null – сохраняем NULL, иначе дату
     updateData.birthdate = (birthdate && birthdate !== '') ? birthdate : null;
   }
 
   if (req.file) {
-    updateData.avatar_url = req.file.path;
+    updateData.avatar_url = '/uploads/avatars/' + req.file.filename;
   }
 
   if (Object.keys(updateData).length === 0) {
