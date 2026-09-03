@@ -1,4 +1,7 @@
 const User = require('../models/User');
+const sharp = require('sharp');
+const fs = require('fs');
+const path = require('path');
 
 exports.updateProfile = async (req, res) => {
   const { username, pronouns, bio, birthdate } = req.body;
@@ -25,7 +28,26 @@ exports.updateProfile = async (req, res) => {
   }
 
   if (req.file) {
-    updateData.avatar_url = '/uploads/avatars/' + req.file.filename;
+    try {
+      const uploadDir = path.join(__dirname, '../uploads/avatars');
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
+      
+      const fileName = Date.now() + '-' + Math.round(Math.random() * 1E9) + '.webp';
+      const isGif = req.file.mimetype === 'image/gif';
+
+      const buffer = await sharp(req.file.buffer, { animated: isGif })
+        .resize(200, 200, { fit: 'cover' })
+        .webp({ quality: 80 })
+        .toBuffer();
+
+      fs.writeFileSync(path.join(uploadDir, fileName), buffer);
+      updateData.avatar_url = '/uploads/avatars/' + fileName;
+    } catch (err) {
+      console.error('[PROFILE] Image processing error:', err);
+      return res.status(500).json({ error: 'Не удалось обработать изображение' });
+    }
   }
 
   if (Object.keys(updateData).length === 0) {
