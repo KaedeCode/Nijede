@@ -21,7 +21,8 @@ jobs:
           ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} '
             set -e
             cd ~/projects/nijede
-            git pull origin main
+            git fetch origin
+            git reset --hard origin/main
             cd backend
             npm install
             pm2 restart nijede-backend
