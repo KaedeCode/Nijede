@@ -448,7 +448,7 @@
                 objLoader.setMaterials(materials);
                 objLoader.load(objUrl, (object) => {
                     object.name = objName;
-                    if (objName !== 'Nroom' & objName !== 'table') {
+                    if (objName !== 'Nroom' && objName !== 'table') {
                         const centeredGroup = centerObject(object);
                         centeredGroup.name = objName;
                         enableShadows(centeredGroup);

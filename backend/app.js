@@ -15,7 +15,7 @@ const feedbackRoutes = require('./routes/feedback');
 const app = express();
 
 const corsOptions = {
-  origin: ['http://localhost:5500', 'https://kaedecode.github.io', 'http://127.0.0.1:5500', 'http://localhost:3000', process.env.FRONTEND_URL].filter(Boolean),
+  origin: [process.env.FRONTEND_URL].filter(Boolean),
   credentials: true,
 };
 app.use(cors(corsOptions));
