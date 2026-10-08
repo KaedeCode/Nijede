@@ -1,10 +1,20 @@
 import { initScene } from './engine.js';
+import { createCalendarMesh } from './calendar.js';
 
 export function initKaedeScene() {
   return initScene({
     theme: 'kaede',
     lightPosition: [5, 10, 7],
     center: new THREE.Vector3(10, 20, 0),
+    decorations: [
+      {
+        factory: () => createCalendarMesh({ theme: 'kaede', width: 16, height: 12, depth: 0.3 }),
+        position: [-50, 25, -42],
+        rotation: [0, 0, 0],
+        name: 'calendar',
+        interactive: true
+      }
+    ],
     camera: {
       baseAngleX: Math.PI / 2,
       baseAngleY: 0.3,
@@ -32,7 +42,20 @@ export function initKaedeScene() {
     menuItemClass: 'context-menu-item-k',
     doorName: 'kaede_door',
     exitMessage: 'Вы действительно хотите покинуть комнату Каэде?',
+    focusDialog: [
+      {
+        text: 'Ах... календарь. Знаешь, я пока не придумала, как его использовать в комнате. Но я обязательно что-нибудь придумаю!',
+        sprite: 'thoughtfully_explains.webp'
+      },
+      {
+        text: 'Обещаю — как только у меня появится идея, ты узнаешь об этом первым.',
+        sprite: 'smiling.webp'
+      }
+    ],
     interactions: {
+      calendar: [
+        { label: 'Открыть', type: 'focus' }
+      ],
       kaede_piano: [
         { label: 'Описания', type: 'dialog', action: 'info' },
         { label: 'История', type: 'dialog', action: 'detail' },

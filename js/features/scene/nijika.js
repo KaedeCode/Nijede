@@ -1,4 +1,5 @@
 import { initScene } from './engine.js';
+import { createCalendarMesh } from './calendar.js';
 
 const MODEL_SLUG_MAP = {
   guiter: 'guitar'
@@ -9,6 +10,15 @@ export function initNijikaScene() {
     theme: 'nijika',
     lightPosition: [-1, 4, -2],
     center: new THREE.Vector3(0, 2, -3),
+    decorations: [
+      {
+        factory: () => createCalendarMesh({ theme: 'nijika', width: 2, height: 1.5, depth: 0.1 }),
+        position: [4, 3.5, -11],
+        rotation: [0, 0, 0],
+        name: 'calendar',
+        interactive: true
+      }
+    ],
     camera: {
       baseAngleX: 0,
       baseAngleY: 0.3,
@@ -42,7 +52,24 @@ export function initNijikaScene() {
     menuItemClass: 'context-menu-item-n',
     doorName: 'nijika_door',
     exitMessage: 'Вы действительно хотите покинуть комнату Ниджики?',
+    focusDialog: [
+      {
+        text: 'О! Заметил календарь? Мы с Каэде пока не решили, зачем он тут вообще нужен.',
+        sprite: 'joy.webp'
+      },
+      {
+        text: 'Но это временно! Как только придумаем что-нибудь крутое — сразу покажем.',
+        sprite: 'trueHappiness.webp'
+      },
+      {
+        text: 'Ыгрэк',
+        sprite: 'misunderstanding.webp'
+      }
+    ],
     interactions: {
+      calendar: [
+        { label: 'Открыть', type: 'focus' }
+      ],
       pictureM: [
         { label: 'Описание', type: 'dialog', action: 'info' }
       ],

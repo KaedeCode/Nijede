@@ -10,6 +10,7 @@ export class Novel {
         this.hideTimer = null;
         this.bgWasPlaying = false;
         this.activeAudioCount = 0;
+        this.onHide = null;
         
         const isNijika = window.location.pathname.includes('nijika.html');
         this.spriteBasePath = isNijika 
@@ -138,8 +139,9 @@ export class Novel {
         }
     }
     
-    show(dialogs) {
+    show(dialogs, options = {}) {
         if (!dialogs || dialogs.length === 0) return;
+        this.onHide = options.onHide || null;
         this.dialogs = dialogs;
         this.currentIndex = 0;
         this.isVisible = true;
@@ -164,6 +166,11 @@ export class Novel {
         this.hideTempImage();
         this.stopTempAudio();
         this.clearChoices();
+        if (this.onHide) {
+            const cb = this.onHide;
+            this.onHide = null;
+            cb();
+        }
     }
 
     clearChoices() {

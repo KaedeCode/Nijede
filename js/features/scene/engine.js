@@ -12,6 +12,17 @@ const SHADOW_DEFAULT = {
   far: 30,
   mapSize: 1024
 };
+const FOCUS_FILL = 0.7;
+const FOCUS_DURATION = 1.8;
+const ROTATION_LAG = 1.15;
+
+function easeInOutCubic(t) {
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+}
+
+function easeInOutSine(t) {
+  return -(Math.cos(Math.PI * t) - 1) / 2;
+}
 
 export function initScene(config) {
   const shadowCfg = { ...SHADOW_DEFAULT, ...(config.shadow || {}) };
@@ -51,12 +62,89 @@ export function initScene(config) {
   let targetCameraAngleY = cameraAngleY;
   const center = config.center;
 
+  const focusAnim = {
+    startTime: 0,
+    progress: 0,
+    startPos: new THREE.Vector3(),
+    endPos: new THREE.Vector3(),
+    startQuat: new THREE.Quaternion(),
+    endQuat: new THREE.Quaternion()
+  };
+  let cameraMode = 'orbit';
+
+  function computeOrbitPosition() {
+    return new THREE.Vector3(
+      center.x + cam.distance * Math.cos(cameraAngleY) * Math.sin(cameraAngleX),
+      center.y + cam.distance * Math.sin(cameraAngleY),
+      center.z + cam.distance * Math.cos(cameraAngleY) * Math.cos(cameraAngleX)
+    );
+  }
+
+  function quaternionLookingAt(eyePos, targetPos) {
+    const m = new THREE.Matrix4();
+    m.lookAt(eyePos, targetPos, camera.up);
+    return new THREE.Quaternion().setFromRotationMatrix(m);
+  }
+
   function updateCamera() {
-    const cameraX = center.x + cam.distance * Math.cos(cameraAngleY) * Math.sin(cameraAngleX);
-    const cameraY = center.y + cam.distance * Math.sin(cameraAngleY);
-    const cameraZ = center.z + cam.distance * Math.cos(cameraAngleY) * Math.cos(cameraAngleX);
-    camera.position.set(cameraX, cameraY, cameraZ);
+    if (cameraMode === 'focusing-in' || cameraMode === 'focusing-out') {
+      const tPos = easeInOutCubic(focusAnim.progress);
+      const tRot = Math.pow(easeInOutSine(focusAnim.progress), ROTATION_LAG);
+      camera.position.lerpVectors(focusAnim.startPos, focusAnim.endPos, tPos);
+      camera.quaternion.slerpQuaternions(focusAnim.startQuat, focusAnim.endQuat, tRot);
+      return;
+    }
+    if (cameraMode === 'focused') {
+      camera.position.copy(focusAnim.endPos);
+      camera.quaternion.copy(focusAnim.endQuat);
+      return;
+    }
+    camera.position.copy(computeOrbitPosition());
     camera.lookAt(center);
+  }
+
+  function beginFocusTravel(endPos, endLookAt, returning) {
+    focusAnim.startTime = performance.now();
+    focusAnim.progress = 0;
+    focusAnim.startPos.copy(camera.position);
+    focusAnim.endPos.copy(endPos);
+    focusAnim.startQuat.copy(camera.quaternion);
+    focusAnim.endQuat.copy(quaternionLookingAt(endPos, endLookAt));
+    cameraMode = returning ? 'focusing-out' : 'focusing-in';
+  }
+
+  function focusOnObject(object) {
+    if (cameraMode !== 'orbit') return;
+    object.updateMatrixWorld(true);
+    const box = new THREE.Box3().setFromObject(object);
+    const size = box.getSize(new THREE.Vector3());
+    const objCenter = box.getCenter(new THREE.Vector3());
+    const forward = new THREE.Vector3(0, 0, 1).applyQuaternion(
+      object.getWorldQuaternion(new THREE.Quaternion())
+    );
+
+    const vFov = THREE.MathUtils.degToRad(camera.fov);
+    const hFov = 2 * Math.atan(Math.tan(vFov / 2) * camera.aspect);
+    const dH = size.y / (2 * FOCUS_FILL * Math.tan(vFov / 2));
+    const dW = size.x / (2 * FOCUS_FILL * Math.tan(hFov / 2));
+    const distance = Math.max(dH, dW) * 1.05;
+
+    const targetPos = objCenter.clone().add(forward.multiplyScalar(distance));
+    beginFocusTravel(targetPos, objCenter, false);
+  }
+
+  function unfocusCamera() {
+    if (cameraMode !== 'focused') return;
+    beginFocusTravel(computeOrbitPosition(), center, true);
+  }
+
+  function exitFocus() {
+    if (cameraMode !== 'focused') return;
+    if (config.focusDialog && config.focusDialog.length) {
+      getNovel().show(config.focusDialog, { onHide: unfocusCamera });
+    } else {
+      unfocusCamera();
+    }
   }
 
   const raycaster = new THREE.Raycaster();
@@ -206,16 +294,27 @@ export function initScene(config) {
 
   function handleObjectInteraction(object, x, y) {
     const actions = getObjectActions(object.name);
-    if (actions.length === 1 && actions[0].type === 'redirect') {
-      if (object.name === config.doorName) {
-        showConfirmModal(config.exitMessage, () => {
-          window.location.href = actions[0].url;
-        });
-      } else {
-        window.location.href = actions[0].url;
+
+    if (actions.length === 1) {
+      const a = actions[0];
+      if (a.type === 'redirect') {
+        if (object.name === config.doorName) {
+          showConfirmModal(config.exitMessage, () => { window.location.href = a.url; });
+        } else {
+          window.location.href = a.url;
+        }
+        return;
       }
-      return;
+      if (a.type === 'focus') {
+        if (hoveredObject) {
+          resetObject(hoveredObject);
+          hoveredObject = null;
+        }
+        focusOnObject(object);
+        return;
+      }
     }
+
     showContextMenu(x, y, object);
   }
 
@@ -256,7 +355,7 @@ export function initScene(config) {
   }
 
   function performHoverCheck() {
-    if (menuVisible) return;
+    if (menuVisible || cameraMode !== 'orbit') return;
     raycaster.setFromCamera(mouse, camera);
     const intersects = raycaster.intersectObjects(interactiveObjects, true);
     if (intersects.length > 0) {
@@ -273,7 +372,7 @@ export function initScene(config) {
   }
 
   renderer.domElement.addEventListener('mousemove', e => {
-    if (menuVisible) return;
+    if (menuVisible || cameraMode !== 'orbit') return;
     const mouseX = (e.clientX / window.innerWidth) * 2 - 1;
     const mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
     const mappedX = Math.pow(Math.abs(mouseX), cam.mouseGamma) * Math.sign(mouseX);
@@ -288,6 +387,12 @@ export function initScene(config) {
   });
 
   renderer.domElement.addEventListener('click', e => {
+    if (cameraMode === 'focused') {
+      exitFocus();
+      return;
+    }
+    if (cameraMode !== 'orbit') return;
+
     const rect = renderer.domElement.getBoundingClientRect();
     mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
     mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
@@ -317,6 +422,12 @@ export function initScene(config) {
     }
   });
 
+  document.addEventListener('keydown', e => {
+    if (e.code === 'Escape' && cameraMode === 'focused') {
+      unfocusCamera();
+    }
+  });
+
   document.addEventListener('click', e => {
     if (contextMenu && !contextMenu.contains(e.target) && e.target !== renderer.domElement) {
       hideContextMenu();
@@ -333,9 +444,7 @@ export function initScene(config) {
       const url = target.dataset.url;
       if (!url) return;
       if (objectName === config.doorName) {
-        showConfirmModal(config.exitMessage, () => {
-          window.location.href = url;
-        });
+        showConfirmModal(config.exitMessage, () => { window.location.href = url; });
       } else {
         window.location.href = url;
       }
@@ -365,6 +474,19 @@ export function initScene(config) {
     return group;
   }
 
+  function registerInteractive(obj) {
+    obj.userData.originalScale = obj.scale.clone();
+    obj.userData.targetScale = obj.scale.clone();
+    const originalEmissive = [];
+    traverseMaterials(obj, material => {
+      if (material.emissive) {
+        originalEmissive.push({ material, emissive: material.emissive.clone() });
+      }
+    });
+    obj.userData.originalEmissive = originalEmissive;
+    interactiveObjects.push(obj);
+  }
+
   function loadModel(objName) {
     return new Promise((resolve, reject) => {
       const objUrl = `${config.modelsPath}/${objName}.obj`;
@@ -382,16 +504,7 @@ export function initScene(config) {
             centeredGroup.name = objName;
             enableShadows(centeredGroup, true);
             scene.add(centeredGroup);
-            interactiveObjects.push(centeredGroup);
-            centeredGroup.userData.originalScale = centeredGroup.scale.clone();
-            centeredGroup.userData.targetScale = centeredGroup.scale.clone();
-            const originalEmissive = [];
-            traverseMaterials(centeredGroup, material => {
-              if (material.emissive) {
-                originalEmissive.push({ material, emissive: material.emissive.clone() });
-              }
-            });
-            centeredGroup.userData.originalEmissive = originalEmissive;
+            registerInteractive(centeredGroup);
           } else {
             enableShadows(object, false);
             if (config.onNonInteractive) config.onNonInteractive(object);
@@ -411,17 +524,43 @@ export function initScene(config) {
     });
   });
 
+  if (config.decorations) {
+    config.decorations.forEach(dec => {
+      const obj = dec.factory();
+      if (dec.position) obj.position.set(dec.position[0], dec.position[1], dec.position[2]);
+      if (dec.rotation) obj.rotation.set(dec.rotation[0], dec.rotation[1], dec.rotation[2]);
+      if (dec.scale) obj.scale.setScalar(dec.scale);
+      if (dec.name) obj.name = dec.name;
+      enableShadows(obj, true);
+      scene.add(obj);
+      if (dec.interactive) registerInteractive(obj);
+    });
+  }
+
   function animate() {
     requestAnimationFrame(animate);
-    if (!menuVisible) {
+
+    if (cameraMode === 'focusing-in' || cameraMode === 'focusing-out') {
+      const elapsed = (performance.now() - focusAnim.startTime) / 1000;
+      focusAnim.progress = Math.min(elapsed / FOCUS_DURATION, 1);
+      if (focusAnim.progress >= 1) {
+        cameraMode = cameraMode === 'focusing-in' ? 'focused' : 'orbit';
+      }
+    }
+
+    if (cameraMode === 'orbit') {
       cameraAngleX += (targetCameraAngleX - cameraAngleX) * cam.lerp;
       cameraAngleY += (targetCameraAngleY - cameraAngleY) * cam.lerp;
       if (pointerDirty) {
         performHoverCheck();
         pointerDirty = false;
       }
+    } else {
+      pointerDirty = false;
     }
+
     updateCamera();
+
     interactiveObjects.forEach(obj => {
       if (obj.userData.targetScale) {
         obj.scale.lerp(obj.userData.targetScale, 0.2);
@@ -430,6 +569,7 @@ export function initScene(config) {
         }
       }
     });
+
     renderer.render(scene, camera);
   }
 
