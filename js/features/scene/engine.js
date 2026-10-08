@@ -1,11 +1,23 @@
 import { getNovel } from '../novel/novel.js';
 import { DIALOGS_MAP } from '../novel/dialogs.js';
 
-const DIM_OPACITY = 0.4;
+const BACKGROUND_DEFAULT = 0x111122;
+const AMBIENT_COLOR = 0xffcc99;
+const AMBIENT_INTENSITY = 0.5;
+const DIRECTIONAL_COLOR = 0xffeebb;
+const DIRECTIONAL_INTENSITY = 0.8;
+const SHADOW_DEFAULT = {
+  bounds: 15,
+  near: 0.5,
+  far: 30,
+  mapSize: 1024
+};
 
 export function initScene(config) {
+  const shadowCfg = { ...SHADOW_DEFAULT, ...(config.shadow || {}) };
+
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x111122);
+  scene.background = new THREE.Color(config.background ?? BACKGROUND_DEFAULT);
 
   const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
   camera.position.set(0, 0, 5);
@@ -17,34 +29,32 @@ export function initScene(config) {
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   document.body.appendChild(renderer.domElement);
 
-  const ambientLight = new THREE.AmbientLight(0xffcc99, 0.5);
-  scene.add(ambientLight);
+  scene.add(new THREE.AmbientLight(AMBIENT_COLOR, AMBIENT_INTENSITY));
 
-  const directionalLight = new THREE.DirectionalLight(0xffeebb, 0.8);
+  const directionalLight = new THREE.DirectionalLight(DIRECTIONAL_COLOR, DIRECTIONAL_INTENSITY);
   directionalLight.position.set(config.lightPosition[0], config.lightPosition[1], config.lightPosition[2]);
   directionalLight.castShadow = true;
-  directionalLight.shadow.mapSize.width = 1024;
-  directionalLight.shadow.mapSize.height = 1024;
-  directionalLight.shadow.camera.left = -15;
-  directionalLight.shadow.camera.right = 15;
-  directionalLight.shadow.camera.top = 15;
-  directionalLight.shadow.camera.bottom = -15;
-  directionalLight.shadow.camera.near = 0.5;
-  directionalLight.shadow.camera.far = 30;
+  directionalLight.shadow.mapSize.width = shadowCfg.mapSize;
+  directionalLight.shadow.mapSize.height = shadowCfg.mapSize;
+  directionalLight.shadow.camera.left = -shadowCfg.bounds;
+  directionalLight.shadow.camera.right = shadowCfg.bounds;
+  directionalLight.shadow.camera.top = shadowCfg.bounds;
+  directionalLight.shadow.camera.bottom = -shadowCfg.bounds;
+  directionalLight.shadow.camera.near = shadowCfg.near;
+  directionalLight.shadow.camera.far = shadowCfg.far;
   scene.add(directionalLight);
 
-  let cameraAngleX = config.baseAngleX;
-  let cameraAngleY = 0.3;
+  const cam = config.camera;
+  let cameraAngleX = cam.baseAngleX;
+  let cameraAngleY = cam.baseAngleY;
   let targetCameraAngleX = cameraAngleX;
   let targetCameraAngleY = cameraAngleY;
-  const cameraDistance = 1;
-  const lerpFactor = 0.25;
   const center = config.center;
 
   function updateCamera() {
-    const cameraX = center.x + cameraDistance * Math.cos(cameraAngleY) * Math.sin(cameraAngleX);
-    const cameraY = center.y + cameraDistance * Math.sin(cameraAngleY);
-    const cameraZ = center.z + cameraDistance * Math.cos(cameraAngleY) * Math.cos(cameraAngleX);
+    const cameraX = center.x + cam.distance * Math.cos(cameraAngleY) * Math.sin(cameraAngleX);
+    const cameraY = center.y + cam.distance * Math.sin(cameraAngleY);
+    const cameraZ = center.z + cam.distance * Math.cos(cameraAngleY) * Math.cos(cameraAngleX);
     camera.position.set(cameraX, cameraY, cameraZ);
     camera.lookAt(center);
   }
@@ -53,6 +63,7 @@ export function initScene(config) {
   const mouse = new THREE.Vector2();
   const interactiveObjects = [];
   let hoveredObject = null;
+  let pointerDirty = false;
 
   function traverseMaterials(obj, callback) {
     obj.traverse(child => {
@@ -87,19 +98,6 @@ export function initScene(config) {
 
   const dimOverlay = document.createElement('div');
   dimOverlay.id = 'dimOverlay';
-  Object.assign(dimOverlay.style, {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    backgroundColor: `rgba(0, 0, 0, ${DIM_OPACITY})`,
-    pointerEvents: 'none',
-    zIndex: 9999,
-    opacity: 0,
-    transition: 'opacity 0.3s ease',
-    display: 'none'
-  });
   document.body.appendChild(dimOverlay);
 
   let menuVisible = false;
@@ -108,7 +106,6 @@ export function initScene(config) {
   contextMenu.style.display = 'none';
   contextMenu.style.opacity = '0';
   contextMenu.style.transform = 'scale(0.95)';
-  contextMenu.style.transition = 'opacity 0.3s ease, transform 0.2s ease';
   document.body.appendChild(contextMenu);
 
   let currentContextObject = null;
@@ -117,7 +114,7 @@ export function initScene(config) {
   let hideTimeout = null;
 
   function applyMenuPosition() {
-    if (!contextMenu || !menuVisible) return;
+    if (!menuVisible) return;
     const menuWidth = contextMenu.offsetWidth;
     const menuHeight = contextMenu.offsetHeight;
     const winWidth = window.innerWidth;
@@ -149,8 +146,7 @@ export function initScene(config) {
   }
 
   function getObjectActions(objectName) {
-    if (config.interactions[objectName]) return config.interactions[objectName];
-    return config.fallbackActions(objectName);
+    return config.interactions[objectName] || config.fallbackActions(objectName);
   }
 
   function buildContextMenu(object) {
@@ -172,68 +168,39 @@ export function initScene(config) {
   }
 
   function showConfirmModal(message, onConfirm) {
-    const modalOverlay = document.createElement('div');
-    modalOverlay.className = 'confirm-modal-overlay';
-    Object.assign(modalOverlay.style, {
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      width: '100%',
-      height: '100%',
-      backgroundColor: 'rgba(0, 0, 0, 0.8)',
-      backdropFilter: 'blur(8px)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 20000,
-      opacity: 0,
-      transition: 'opacity 0.3s ease'
-    });
-
-    const modal = document.createElement('div');
-    modal.className = 'confirm-modal';
-    Object.assign(modal.style, {
-      backgroundColor: '#1a1a2e',
-      borderRadius: '24px',
-      padding: '32px 40px',
-      maxWidth: '400px',
-      width: '90%',
-      textAlign: 'center',
-      boxShadow: `0 20px 40px rgba(0,0,0,0.5), 0 0 0 2px ${config.confirmShadow}`,
-      transform: 'scale(0.9)',
-      transition: 'transform 0.2s ease'
-    });
-
-    modal.innerHTML = `
-      <h3 style="color: #fff; margin-bottom: 16px; font-size: 1.5rem;">Подтверждение выхода</h3>
-      <p style="color: #ccc; margin-bottom: 32px; font-size: 1.1rem;">${message}</p>
-      <div style="display: flex; gap: 20px; justify-content: center;">
-        <button class="confirm-btn-yes" style="background: ${config.confirmColor}; border: none; color: ${config.confirmTextColor}; padding: 12px 24px; border-radius: 40px; font-size: 1rem; cursor: pointer;">Выйти</button>
-        <button class="confirm-btn-no" style="background: #2a2a3a; border: 1px solid ${config.confirmColor}; color: white; padding: 12px 24px; border-radius: 40px; font-size: 1rem; cursor: pointer;">Отмена</button>
+    const overlay = document.createElement('div');
+    overlay.className = 'confirm-modal-overlay';
+    overlay.dataset.theme = config.theme;
+    overlay.innerHTML = `
+      <div class="confirm-modal">
+        <h3>Подтверждение выхода</h3>
+        <p>${message}</p>
+        <div class="confirm-modal-actions">
+          <button class="confirm-btn-yes">Выйти</button>
+          <button class="confirm-btn-no">Отмена</button>
+        </div>
       </div>
     `;
-
-    modalOverlay.appendChild(modal);
-    document.body.appendChild(modalOverlay);
+    document.body.appendChild(overlay);
 
     requestAnimationFrame(() => {
-      modalOverlay.style.opacity = '1';
-      modal.style.transform = 'scale(1)';
+      overlay.style.opacity = '1';
+      overlay.querySelector('.confirm-modal').style.transform = 'scale(1)';
     });
 
     function closeModal(confirmed) {
-      modalOverlay.style.opacity = '0';
-      modal.style.transform = 'scale(0.9)';
+      overlay.style.opacity = '0';
+      overlay.querySelector('.confirm-modal').style.transform = 'scale(0.9)';
       setTimeout(() => {
-        if (modalOverlay.parentNode) modalOverlay.remove();
+        if (overlay.parentNode) overlay.remove();
         if (confirmed) onConfirm();
       }, 300);
     }
 
-    modal.querySelector('.confirm-btn-yes').addEventListener('click', () => closeModal(true));
-    modal.querySelector('.confirm-btn-no').addEventListener('click', () => closeModal(false));
-    modalOverlay.addEventListener('click', e => {
-      if (e.target === modalOverlay) closeModal(false);
+    overlay.querySelector('.confirm-btn-yes').addEventListener('click', () => closeModal(true));
+    overlay.querySelector('.confirm-btn-no').addEventListener('click', () => closeModal(false));
+    overlay.addEventListener('click', e => {
+      if (e.target === overlay) closeModal(false);
     });
   }
 
@@ -279,30 +246,17 @@ export function initScene(config) {
     });
   }
 
-  function enableShadows(obj) {
+  function enableShadows(obj, castShadow = true) {
     obj.traverse(child => {
       if (child.isMesh) {
-        child.castShadow = true;
+        child.castShadow = castShadow;
         child.receiveShadow = true;
       }
     });
   }
 
-  renderer.domElement.addEventListener('mousemove', e => {
+  function performHoverCheck() {
     if (menuVisible) return;
-    const mouseX = (e.clientX / window.innerWidth) * 2 - 1;
-    const mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
-    const mappedX = Math.pow(Math.abs(mouseX), 0.6) * Math.sign(mouseX);
-    const mappedY = Math.pow(Math.abs(mouseY), 0.6) * Math.sign(mouseY);
-    const maxAngleX = Math.PI / 12;
-    targetCameraAngleX = config.baseAngleX - mappedX * maxAngleX;
-    targetCameraAngleX = Math.max(config.baseAngleX - config.limitX, Math.min(config.baseAngleX + config.limitX, targetCameraAngleX));
-    const maxAngleY = 0.3;
-    const baseAngleY = 0.3;
-    targetCameraAngleY = baseAngleY - mappedY * maxAngleY;
-    targetCameraAngleY = Math.max(-0.5, Math.min(0.8, targetCameraAngleY));
-    mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
     raycaster.setFromCamera(mouse, camera);
     const intersects = raycaster.intersectObjects(interactiveObjects, true);
     if (intersects.length > 0) {
@@ -316,15 +270,31 @@ export function initScene(config) {
       resetObject(hoveredObject);
       hoveredObject = null;
     }
+  }
+
+  renderer.domElement.addEventListener('mousemove', e => {
+    if (menuVisible) return;
+    const mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+    const mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+    const mappedX = Math.pow(Math.abs(mouseX), cam.mouseGamma) * Math.sign(mouseX);
+    const mappedY = Math.pow(Math.abs(mouseY), cam.mouseGamma) * Math.sign(mouseY);
+    targetCameraAngleX = cam.baseAngleX - mappedX * cam.limitX;
+    targetCameraAngleX = Math.max(cam.baseAngleX - cam.limitX, Math.min(cam.baseAngleX + cam.limitX, targetCameraAngleX));
+    targetCameraAngleY = cam.baseAngleY - mappedY * cam.limitY;
+    targetCameraAngleY = Math.max(cam.yMin, Math.min(cam.yMax, targetCameraAngleY));
+    mouse.x = mouseX;
+    mouse.y = mouseY;
+    pointerDirty = true;
   });
 
   renderer.domElement.addEventListener('click', e => {
     const rect = renderer.domElement.getBoundingClientRect();
+    mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+    raycaster.setFromCamera(mouse, camera);
+    const intersects = raycaster.intersectObjects(interactiveObjects, true);
+
     if (menuVisible) {
-      mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-      mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-      raycaster.setFromCamera(mouse, camera);
-      const intersects = raycaster.intersectObjects(interactiveObjects, true);
       if (intersects.length === 0) {
         hideContextMenu();
         return;
@@ -336,10 +306,7 @@ export function initScene(config) {
       }
       return;
     }
-    mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-    mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-    raycaster.setFromCamera(mouse, camera);
-    const intersects = raycaster.intersectObjects(interactiveObjects, true);
+
     if (intersects.length > 0) {
       const root = findRootGroup(intersects[0].object);
       if (root) {
@@ -381,14 +348,7 @@ export function initScene(config) {
         getNovel().show(dialogs);
         return;
       }
-      Swal.fire({
-        icon: 'error',
-        title: 'Диалог не найден',
-        text: `Диалог "${action}" для "${objectName || 'неизвестно'}" не найден.`,
-        background: '#1a1a2e',
-        color: '#fff',
-        confirmButtonColor: config.errorColor
-      });
+      if (config.onDialogNotFound) config.onDialogNotFound(objectName, action);
     }
   });
 
@@ -420,7 +380,7 @@ export function initScene(config) {
           if (!config.nonInteractiveModels.includes(objName)) {
             const centeredGroup = centerObject(object);
             centeredGroup.name = objName;
-            enableShadows(centeredGroup);
+            enableShadows(centeredGroup, true);
             scene.add(centeredGroup);
             interactiveObjects.push(centeredGroup);
             centeredGroup.userData.originalScale = centeredGroup.scale.clone();
@@ -433,7 +393,7 @@ export function initScene(config) {
             });
             centeredGroup.userData.originalEmissive = originalEmissive;
           } else {
-            enableShadows(object);
+            enableShadows(object, false);
             if (config.onNonInteractive) config.onNonInteractive(object);
             scene.add(object);
           }
@@ -443,15 +403,23 @@ export function initScene(config) {
     });
   }
 
-  Promise.allSettled(config.models.map(name => loadModel(name))).then(() => {
-    if (window.resolveModelsLoaded) window.resolveModelsLoaded();
+  const modelsReady = Promise.allSettled(config.models.map(name => loadModel(name))).then(results => {
+    results.forEach((r, i) => {
+      if (r.status === 'rejected') {
+        console.warn(`Failed to load model "${config.models[i]}":`, r.reason);
+      }
+    });
   });
 
   function animate() {
     requestAnimationFrame(animate);
     if (!menuVisible) {
-      cameraAngleX += (targetCameraAngleX - cameraAngleX) * lerpFactor;
-      cameraAngleY += (targetCameraAngleY - cameraAngleY) * lerpFactor;
+      cameraAngleX += (targetCameraAngleX - cameraAngleX) * cam.lerp;
+      cameraAngleY += (targetCameraAngleY - cameraAngleY) * cam.lerp;
+      if (pointerDirty) {
+        performHoverCheck();
+        pointerDirty = false;
+      }
     }
     updateCamera();
     interactiveObjects.forEach(obj => {
@@ -472,4 +440,6 @@ export function initScene(config) {
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
   });
+
+  return modelsReady;
 }

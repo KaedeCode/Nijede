@@ -1,11 +1,21 @@
 import { initScene } from './engine.js';
 
 export function initKaedeScene() {
-  initScene({
-    baseAngleX: Math.PI / 2,
-    limitX: Math.PI / 12,
+  return initScene({
+    theme: 'kaede',
     lightPosition: [5, 10, 7],
     center: new THREE.Vector3(10, 20, 0),
+    camera: {
+      baseAngleX: Math.PI / 2,
+      baseAngleY: 0.3,
+      limitX: Math.PI / 12,
+      limitY: 0.3,
+      yMin: -0.5,
+      yMax: 0.8,
+      mouseGamma: 0.6,
+      distance: 1,
+      lerp: 0.25
+    },
     hoverEmissive: 0x7a3a9a,
     modelsPath: '../assets/models/kaede',
     models: [
@@ -20,10 +30,6 @@ export function initKaedeScene() {
     nonInteractiveModels: ['kaede_room'],
     menuClass: 'context-menu-k',
     menuItemClass: 'context-menu-item-k',
-    confirmColor: '#9d4edd',
-    confirmTextColor: 'white',
-    confirmShadow: 'rgba(157,78,221,0.5)',
-    errorColor: '#9d4edd',
     doorName: 'kaede_door',
     exitMessage: 'Вы действительно хотите покинуть комнату Каэде?',
     interactions: {
@@ -56,6 +62,16 @@ export function initKaedeScene() {
     fallbackActions: () => [
       { label: 'Описания', type: 'dialog', action: 'info' },
       { label: 'История', type: 'dialog', action: 'detail' }
-    ]
+    ],
+    onDialogNotFound: (objectName, action) => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Диалог не найден',
+        text: `Диалог "${action}" для "${objectName || 'неизвестно'}" не найден.`,
+        background: '#1a1a2e',
+        color: '#fff',
+        confirmButtonColor: '#9d4edd'
+      });
+    }
   });
 }

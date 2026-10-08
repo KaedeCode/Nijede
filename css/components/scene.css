@@ -1,0 +1,99 @@
+#dimOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    display: none;
+}
+
+.confirm-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.confirm-modal {
+    background: #1a1a2e;
+    border-radius: 24px;
+    padding: 32px 40px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    transform: scale(0.9);
+    transition: transform 0.2s ease;
+}
+
+.confirm-modal h3 {
+    color: #fff;
+    margin-bottom: 16px;
+    font-size: 1.5rem;
+}
+
+.confirm-modal p {
+    color: #ccc;
+    margin-bottom: 32px;
+    font-size: 1.1rem;
+}
+
+.confirm-modal-actions {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+.confirm-btn-yes,
+.confirm-btn-no {
+    padding: 12px 24px;
+    border-radius: 40px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.confirm-btn-no {
+    background: #2a2a3a;
+    color: white;
+}
+
+.confirm-modal-overlay[data-theme="kaede"] .confirm-modal {
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 0 2px rgba(157, 78, 221, 0.5);
+}
+
+.confirm-modal-overlay[data-theme="kaede"] .confirm-btn-yes {
+    background: #9d4edd;
+    color: white;
+    border: none;
+}
+
+.confirm-modal-overlay[data-theme="kaede"] .confirm-btn-no {
+    border: 1px solid #9d4edd;
+}
+
+.confirm-modal-overlay[data-theme="nijika"] .confirm-modal {
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 0 2px rgba(221, 212, 78, 0.5);
+}
+
+.confirm-modal-overlay[data-theme="nijika"] .confirm-btn-yes {
+    background: #c7ba00;
+    color: black;
+    border: none;
+}
+
+.confirm-modal-overlay[data-theme="nijika"] .confirm-btn-no {
+    border: 1px solid #c7ba00;
+}

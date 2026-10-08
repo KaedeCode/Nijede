@@ -5,11 +5,21 @@ const MODEL_SLUG_MAP = {
 };
 
 export function initNijikaScene() {
-  initScene({
-    baseAngleX: 0,
-    limitX: Math.PI / 6,
+  return initScene({
+    theme: 'nijika',
     lightPosition: [-1, 4, -2],
     center: new THREE.Vector3(0, 2, -3),
+    camera: {
+      baseAngleX: 0,
+      baseAngleY: 0.3,
+      limitX: Math.PI / 6,
+      limitY: 0.3,
+      yMin: -0.5,
+      yMax: 0.8,
+      mouseGamma: 0.6,
+      distance: 1,
+      lerp: 0.25
+    },
     hoverEmissive: 0x8a8500,
     modelsPath: '../assets/models/nijika',
     models: [
@@ -30,10 +40,6 @@ export function initNijikaScene() {
     nonInteractiveModels: ['Nroom', 'table'],
     menuClass: 'context-menu-n',
     menuItemClass: 'context-menu-item-n',
-    confirmColor: '#c7ba00',
-    confirmTextColor: 'black',
-    confirmShadow: 'rgba(221,212,78,0.5)',
-    errorColor: '#c7ba00',
     doorName: 'nijika_door',
     exitMessage: 'Вы действительно хотите покинуть комнату Ниджики?',
     interactions: {
@@ -68,6 +74,16 @@ export function initNijikaScene() {
         }
       });
       object.position.z = -1;
+    },
+    onDialogNotFound: (objectName, action) => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Диалог не найден',
+        text: `Диалог "${action}" для "${objectName || 'неизвестно'}" не найден.`,
+        background: '#1a1a2e',
+        color: '#fff',
+        confirmButtonColor: '#c7ba00'
+      });
     }
   });
 }

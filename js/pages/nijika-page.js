@@ -27,8 +27,10 @@ initSidebar();
 initMusicControls();
 initSearch('searchInput', 'searchDropdown');
 initRotateOverlay();
+initGlobalActions();
 getNovel();
-initNijikaScene();
+
+const sceneReady = initNijikaScene();
 
 const loadingScreen = document.getElementById('loadingScreen');
 const startTime = Date.now();
@@ -42,8 +44,4 @@ function hideLoadingScreen() {
   }, remaining);
 }
 
-if (window.modelsLoadedPromise) {
-  Promise.all([window.modelsLoadedPromise, loadResources(urls)]).then(hideLoadingScreen);
-} else {
-  loadResources(urls).then(hideLoadingScreen);
-}
+Promise.all([sceneReady, loadResources(urls)]).then(hideLoadingScreen);

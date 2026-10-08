@@ -3,10 +3,10 @@ import { initSidebar } from '../features/menu.js';
 import { initMusicControls } from '../features/music.js';
 import { initSearch } from '../features/search.js';
 import { initRotateOverlay } from '../features/rotate.js';
+import { initGlobalActions } from '../features/actions.js';
 import { getNovel } from '../features/novel/novel.js';
 import { initKaedeScene } from '../features/scene/kaede.js';
 import { loadResources } from '../core/resource-loader.js';
-import { initGlobalActions } from '../features/actions.js';
 
 const SPRITE_BASE = '../assets/images/sprites/kaede/';
 const ROOM_IMG_BASE = '../assets/images/kaede_room/';
@@ -52,8 +52,10 @@ initSidebar();
 initMusicControls();
 initSearch('searchInput', 'searchDropdown');
 initRotateOverlay();
+initGlobalActions();
 getNovel();
-initKaedeScene();
+
+const sceneReady = initKaedeScene();
 
 const loadingScreen = document.getElementById('loadingScreen');
 const startTime = Date.now();
@@ -67,8 +69,4 @@ function hideLoadingScreen() {
   }, remaining);
 }
 
-if (window.modelsLoadedPromise) {
-  Promise.all([window.modelsLoadedPromise, loadResources(urls)]).then(hideLoadingScreen);
-} else {
-  loadResources(urls).then(hideLoadingScreen);
-}
+Promise.all([sceneReady, loadResources(urls)]).then(hideLoadingScreen);
