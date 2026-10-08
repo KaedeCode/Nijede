@@ -36,7 +36,7 @@ function createPiano(instrument, startOctave, endOctave, clazzId, noteMenuu, bar
     noteMenu = noteMenuu;
     barMenu = barMenuu;
 
-    loadNote("audio/C4_" + instrument + ".flac");
+    loadNote("../assets/audio/instruments/C4_" + instrument + ".flac");
     
     for (let o = startOctave; o <= endOctave; o++) {
         
@@ -178,7 +178,7 @@ function addBar() {
     for (let i = 0; i < sigT; i++) {
         const img = document.createElement("img");
         img.className = "sig-note-item";
-        img.src = `images/stems/${sigB}.png`;
+        img.src = `../assets/images/instruments/stems/${sigB}.png`;
         img.alt = sigB;
         img.dataset.value = sigB;
         img.style.width = "30px";
@@ -384,7 +384,7 @@ function noteMenuSplit() {
 
             const img1 = document.createElement("img");
             img1.className = "sig-note-item";
-            img1.src = `images/stems/${nextVal}.png`;
+            img1.src = `../assets/images/instruments/stems/${nextVal}.png`;
             img1.alt = nextVal;
             img1.dataset.value = nextVal;
             img1.style.width = "30px";
@@ -393,7 +393,7 @@ function noteMenuSplit() {
 
             const img2 = document.createElement("img");
             img2.className = "sig-note-item";
-            img2.src = `images/stems/${nextVal}.png`;
+            img2.src = `../assets/images/instruments/stems/${nextVal}.png`;
             img2.alt = nextVal;
             img2.dataset.value = nextVal;
             img2.style.width = "30px";
@@ -440,7 +440,7 @@ function noteMenuMerge() {
 
             const img = document.createElement("img");
             img.className = "sig-note-item";
-            img.src = `images/stems/${prevVal}.png`;
+            img.src = `../assets/images/instruments/stems/${prevVal}.png`;
             img.alt = prevVal;
             img.dataset.value = prevVal;
             img.style.width = "30px";
@@ -511,13 +511,13 @@ function play() {
             note.style.color = "";
         });
 
-        document.getElementById("imgBPlay").src = "images/play.png";
+        document.getElementById("imgBPlay").src = "../assets/images/instruments/play.png";
 
         return;
     }
     isPlaying = true;
     
-    document.getElementById("imgBPlay").src = "images/stop.png";
+    document.getElementById("imgBPlay").src = "../assets/images/instruments/stop.png";
 
     let bpm = parseInt(document.getElementById("tempo").value) || 120;
     
@@ -612,7 +612,7 @@ function play() {
         });
         activeSources = [];
         isPlaying = false;
-        document.getElementById("imgBPlay").src = "images/play.png";
+        document.getElementById("imgBPlay").src = "../assets/images/instruments/play.png";
     }, currentTime));
 }
 function createNoteElement(container, value, ref = null) {
@@ -673,3 +673,23 @@ function sigBottom(num) {
         sigB = 2;
     }
 }
+export {
+  createPiano,
+  addBar,
+  duplicateBar,
+  deleteBar,
+  rightBar,
+  leftBar,
+  startOfRepeat,
+  endOfRepeat,
+  confirmRepeat,
+  cancelRepeat,
+  noteMenuSplit,
+  noteMenuMerge,
+  addNoteForKey,
+  delNoteFromKey,
+  CDTie,
+  play,
+  sigTop,
+  sigBottom
+};

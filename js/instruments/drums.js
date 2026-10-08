@@ -72,7 +72,7 @@ function addBar() {
 
     let bg = document.createElement("img");
     bg.className = "imgBar";
-    bg.src = "images/barOfStaff.png";
+    bg.src = "../assets/images/instruments/barOfStaff.png";
     bar.appendChild(bg);
 
     for (let i = 1; i < 9; i++) {
@@ -95,9 +95,9 @@ function addBar() {
                 }
             });
             if (i == 6)
-                note.src = `images/notes/${sigB}pause.png`;
+                note.src = `../assets/images/instruments/notes/${sigB}pause.png`;
             else 
-                note.src = `images/notes/empty.png`;
+                note.src = `../assets/images/instruments/notes/empty.png`;
             row.dataset.value = row.dataset.value + String(Math.log2(sigB)) + " ";
             row.appendChild(note);
         }
@@ -118,7 +118,7 @@ function addBar() {
                 selectedNote = note;
             }
         });
-        note.src = `images/notes/empty.png`;
+        note.src = `../assets/images/instruments/notes/empty.png`;
         end.dataset.value = end.dataset.value + String(Math.log2(sigB)) + " ";
         end.appendChild(note);
     }
@@ -161,9 +161,9 @@ function noteMenuSplit() {
             });
             let o = noteInRow.src.split("/");
             if (o[o.length-1] != "empty.png")
-                note.src = `images/notes/${2**newDur}${o[o.length-1].slice(1)}`;
+                note.src = `../assets/images/instruments/notes/${2**newDur}${o[o.length-1].slice(1)}`;
             else
-                note.src = "images/notes/empty.png";
+                note.src = "../assets/images/instruments/notes/empty.png";
             r.insertBefore(note, l);
         }
         l.remove();
@@ -191,7 +191,7 @@ function noteMenuSplit() {
             }
         });
         if (noteInRow.src != "") 
-            note.src = `images/notes/empty.png`;
+            note.src = `../assets/images/instruments/notes/empty.png`;
         r.insertBefore(note, l);
     }
     l.remove();
@@ -238,11 +238,11 @@ function noteMenuMerge() {
         let o = noteInRow.src.split("/");
         if (o[o.length-1] != "empty.png") {
             if (o[o.length-1][1] == "6")
-                note.src = `images/notes/${2**newDur}${o[o.length-1].slice(2)}`;
+                note.src = `../assets/images/instruments/notes/${2**newDur}${o[o.length-1].slice(2)}`;
             else
-                note.src = `images/notes/${2**newDur}${o[o.length-1].slice(1)}`;
+                note.src = `../assets/images/instruments/notes/${2**newDur}${o[o.length-1].slice(1)}`;
         } else 
-            note.src = `images/notes/empty.png`;
+            note.src = `../assets/images/instruments/notes/empty.png`;
         r.insertBefore(note, l);
         l.remove();
         r.children[indexOfNote+1].remove();
@@ -270,7 +270,7 @@ function noteMenuMerge() {
         }
     });
     if (noteInRow.src != "") 
-        note.src = `images/notes/empty.png`;
+        note.src = `../assets/images/instruments/notes/empty.png`;
     r.insertBefore(note, l);
     l.remove();
     r.children[indexOfNote+1].remove();
@@ -298,122 +298,122 @@ function addNote() {
             let rrow = bar.children[6+2];
             let note = rrow.children[indexOfNote]
 
-            note.src = `images/notes/${2**rrow.dataset.value.split(" ")[indexOfNote]}base.png`;
+            note.src = `../assets/images/instruments/notes/${2**rrow.dataset.value.split(" ")[indexOfNote]}base.png`;
 
             let prow = bar.children[7].children[indexOfNote];
             let l = prow.src.split("/");
             if (l[l.length-1].slice(1) == "pause.png" || l[l.length-1].slice(2) == "pause.png")
-                prow.src = "images/notes/empty.png";
+                prow.src = "../assets/images/instruments/notes/empty.png";
         } else if (e.key == "1") {
             let rrow = bar.children[2];
             let note = rrow.children[indexOfNote]
 
-            note.src = `images/notes/${2**rrow.dataset.value.split(" ")[indexOfNote]}plate.png`;
+            note.src = `../assets/images/instruments/notes/${2**rrow.dataset.value.split(" ")[indexOfNote]}plate.png`;
 
             let prow = bar.children[7].children[indexOfNote];
             let l = prow.src.split("/");
             if (l[l.length-1].slice(1) == "pause.png" || l[l.length-1].slice(2) == "pause.png")
-                prow.src = "images/notes/empty.png";
+                prow.src = "../assets/images/instruments/notes/empty.png";
         } else if (e.key == "2") {
             let rrow = bar.children[1+2];
             let note = rrow.children[indexOfNote]
 
-            note.src = `images/notes/${2**rrow.dataset.value.split(" ")[indexOfNote]}plate.png`;
+            note.src = `../assets/images/instruments/notes/${2**rrow.dataset.value.split(" ")[indexOfNote]}plate.png`;
 
             let prow = bar.children[7].children[indexOfNote];
             let l = prow.src.split("/");
             if (l[l.length-1].slice(1) == "pause.png" || l[l.length-1].slice(2) == "pause.png")
-                prow.src = "images/notes/empty.png";
+                prow.src = "../assets/images/instruments/notes/empty.png";
         } else if (e.key == "3") {
             let rrow = bar.children[3+2];
             let note = rrow.children[indexOfNote]
 
-            note.src = `images/notes/${2**rrow.dataset.value.split(" ")[indexOfNote]}base.png`;
+            note.src = `../assets/images/instruments/notes/${2**rrow.dataset.value.split(" ")[indexOfNote]}base.png`;
 
             let prow = bar.children[7].children[indexOfNote];
             let l = prow.src.split("/");
             if (l[l.length-1].slice(1) == "pause.png" || l[l.length-1].slice(2) == "pause.png")
-                prow.src = "images/notes/empty.png";
+                prow.src = "../assets/images/instruments/notes/empty.png";
         } else if (e.key == "4") {
             let rrow = bar.children[1+2];
             let note = rrow.children[indexOfNote]
 
-            note.src = `images/notes/${2**rrow.dataset.value.split(" ")[indexOfNote]}HH.png`;
+            note.src = `../assets/images/instruments/notes/${2**rrow.dataset.value.split(" ")[indexOfNote]}HH.png`;
 
             let prow = bar.children[7].children[indexOfNote];
             let l = prow.src.split("/");
             if (l[l.length-1].slice(1) == "pause.png" || l[l.length-1].slice(2) == "pause.png")
-                prow.src = "images/notes/empty.png";
+                prow.src = "../assets/images/instruments/notes/empty.png";
         } else if (e.key == "5") {
             let rrow = bar.children[1+2];
             let note = rrow.children[indexOfNote]
 
-            note.src = `images/notes/${2**rrow.dataset.value.split(" ")[indexOfNote]}OHH.png`;
+            note.src = `../assets/images/instruments/notes/${2**rrow.dataset.value.split(" ")[indexOfNote]}OHH.png`;
 
             let prow = bar.children[7].children[indexOfNote];
             let l = prow.src.split("/");
             if (l[l.length-1].slice(1) == "pause.png" || l[l.length-1].slice(2) == "pause.png")
-                prow.src = "images/notes/empty.png";
+                prow.src = "../assets/images/instruments/notes/empty.png";
         } else if (e.key == "6") {
             let rrow = bar.children[7+2];
             let note = rrow.children[indexOfNote]
 
-            note.src = `images/notes/${2**rrow.dataset.value.split(" ")[indexOfNote]}HH.png`;
+            note.src = `../assets/images/instruments/notes/${2**rrow.dataset.value.split(" ")[indexOfNote]}HH.png`;
 
             let prow = bar.children[7].children[indexOfNote];
             let l = prow.src.split("/");
             if (l[l.length-1].slice(1) == "pause.png" || l[l.length-1].slice(2) == "pause.png")
-                prow.src = "images/notes/empty.png";
+                prow.src = "../assets/images/instruments/notes/empty.png";
         } else if (e.key == "7") {
             let rrow = bar.children[6+2];
             let note = rrow.children[indexOfNote]
 
-            note.src = `images/notes/${2**rrow.dataset.value.split(" ")[indexOfNote]}base.png`;
+            note.src = `../assets/images/instruments/notes/${2**rrow.dataset.value.split(" ")[indexOfNote]}base.png`;
 
             let prow = bar.children[7].children[indexOfNote];
             let l = prow.src.split("/");
             if (l[l.length-1].slice(1) == "pause.png" || l[l.length-1].slice(2) == "pause.png")
-                prow.src = "images/notes/empty.png";
+                prow.src = "../assets/images/instruments/notes/empty.png";
         } else if (e.key == "8") {
             let rrow = bar.children[5+2];
             let note = rrow.children[indexOfNote]
 
-            note.src = `images/notes/${2**rrow.dataset.value.split(" ")[indexOfNote]}base.png`;
+            note.src = `../assets/images/instruments/notes/${2**rrow.dataset.value.split(" ")[indexOfNote]}base.png`;
 
             let prow = bar.children[7].children[indexOfNote];
             let l = prow.src.split("/");
             if (l[l.length-1].slice(1) == "pause.png" || l[l.length-1].slice(2) == "pause.png")
-                prow.src = "images/notes/empty.png";
+                prow.src = "../assets/images/instruments/notes/empty.png";
         } else if (e.key == "9") {
             let rrow = bar.children[4+2];
             let note = rrow.children[indexOfNote]
 
-            note.src = `images/notes/${2**rrow.dataset.value.split(" ")[indexOfNote]}base.png`;
+            note.src = `../assets/images/instruments/notes/${2**rrow.dataset.value.split(" ")[indexOfNote]}base.png`;
 
             let prow = bar.children[7].children[indexOfNote];
             let l = prow.src.split("/");
             if (l[l.length-1].slice(1) == "pause.png" || l[l.length-1].slice(2) == "pause.png")
-                prow.src = "images/notes/empty.png";
+                prow.src = "../assets/images/instruments/notes/empty.png";
         } else if (e.key == "-") {
             let rrow = bar.children[3+2];
             let note = rrow.children[indexOfNote]
 
-            note.src = `images/notes/${2**rrow.dataset.value.split(" ")[indexOfNote]}HH.png`;
+            note.src = `../assets/images/instruments/notes/${2**rrow.dataset.value.split(" ")[indexOfNote]}HH.png`;
 
             let prow = bar.children[7].children[indexOfNote];
             let l = prow.src.split("/");
             if (l[l.length-1].slice(1) == "pause.png" || l[l.length-1].slice(2) == "pause.png")
-                prow.src = "images/notes/empty.png";
+                prow.src = "../assets/images/instruments/notes/empty.png";
         } else if (e.key == "=") {
             let rrow = bar.children[2];
             let note = rrow.children[indexOfNote]
 
-            note.src = `images/notes/${2**rrow.dataset.value.split(" ")[indexOfNote]}HH.png`;
+            note.src = `../assets/images/instruments/notes/${2**rrow.dataset.value.split(" ")[indexOfNote]}HH.png`;
 
             let prow = bar.children[7].children[indexOfNote];
             let l = prow.src.split("/");
             if (l[l.length-1].slice(1) == "pause.png" || l[l.length-1].slice(2) == "pause.png")
-                prow.src = "images/notes/empty.png";
+                prow.src = "../assets/images/instruments/notes/empty.png";
         }
 
         clue.style.display = "none";
@@ -442,7 +442,7 @@ function delNote() {
             let rrow = bar.children[6+2];
             let note = rrow.children[indexOfNote]
 
-            note.src = `images/notes/empty.png`;
+            note.src = `../assets/images/instruments/notes/empty.png`;
 
             let p = true;
             for (let i = 0; i < 8; i++) {
@@ -454,12 +454,12 @@ function delNote() {
 
             let prow = bar.children[7];
             if (p)
-                prow.children[indexOfNote].src = `images/notes/${2**prow.dataset.value.split(" ")[indexOfNote]}pause.png`;
+                prow.children[indexOfNote].src = `../assets/images/instruments/notes/${2**prow.dataset.value.split(" ")[indexOfNote]}pause.png`;
         } else if (e.key == "1") {
             let rrow = bar.children[2];
             let note = rrow.children[indexOfNote]
 
-            note.src = `images/notes/empty.png`;
+            note.src = `../assets/images/instruments/notes/empty.png`;
 
             let p = true;
             for (let i = 0; i < 8; i++) {
@@ -471,12 +471,12 @@ function delNote() {
 
             let prow = bar.children[7];
             if (p)
-                prow.children[indexOfNote].src = `images/notes/${2**prow.dataset.value.split(" ")[indexOfNote]}pause.png`;
+                prow.children[indexOfNote].src = `../assets/images/instruments/notes/${2**prow.dataset.value.split(" ")[indexOfNote]}pause.png`;
         } else if (e.key == "2") {
             let rrow = bar.children[1+2];
             let note = rrow.children[indexOfNote]
 
-            note.src = `images/notes/empty.png`;
+            note.src = `../assets/images/instruments/notes/empty.png`;
 
             let p = true;
             for (let i = 0; i < 8; i++) {
@@ -488,12 +488,12 @@ function delNote() {
 
             let prow = bar.children[7];
             if (p)
-                prow.children[indexOfNote].src = `images/notes/${2**prow.dataset.value.split(" ")[indexOfNote]}pause.png`;
+                prow.children[indexOfNote].src = `../assets/images/instruments/notes/${2**prow.dataset.value.split(" ")[indexOfNote]}pause.png`;
         } else if (e.key == "3") {
             let rrow = bar.children[3+2];
             let note = rrow.children[indexOfNote]
 
-            note.src = `images/notes/empty.png`;
+            note.src = `../assets/images/instruments/notes/empty.png`;
 
             let p = true;
             for (let i = 0; i < 8; i++) {
@@ -505,12 +505,12 @@ function delNote() {
 
             let prow = bar.children[7];
             if (p)
-                prow.children[indexOfNote].src = `images/notes/${2**prow.dataset.value.split(" ")[indexOfNote]}pause.png`;
+                prow.children[indexOfNote].src = `../assets/images/instruments/notes/${2**prow.dataset.value.split(" ")[indexOfNote]}pause.png`;
         } else if (e.key == "4") {
             let rrow = bar.children[1+2];
             let note = rrow.children[indexOfNote]
 
-            note.src = `images/notes/empty.png`;
+            note.src = `../assets/images/instruments/notes/empty.png`;
 
             let p = true;
             for (let i = 0; i < 8; i++) {
@@ -522,12 +522,12 @@ function delNote() {
 
             let prow = bar.children[7];
             if (p)
-                prow.children[indexOfNote].src = `images/notes/${2**prow.dataset.value.split(" ")[indexOfNote]}pause.png`;
+                prow.children[indexOfNote].src = `../assets/images/instruments/notes/${2**prow.dataset.value.split(" ")[indexOfNote]}pause.png`;
         } else if (e.key == "5") {
             let rrow = bar.children[1+2];
             let note = rrow.children[indexOfNote]
 
-            note.src = `images/notes/empty.png`;
+            note.src = `../assets/images/instruments/notes/empty.png`;
 
             let p = true;
             for (let i = 0; i < 8; i++) {
@@ -539,13 +539,13 @@ function delNote() {
 
             let prow = bar.children[7];
             if (p)
-                prow.children[indexOfNote].src = `images/notes/${2**prow.dataset.value.split(" ")[indexOfNote]}pause.png`;
-                prow.src = "images/notes/empty.png";
+                prow.children[indexOfNote].src = `../assets/images/instruments/notes/${2**prow.dataset.value.split(" ")[indexOfNote]}pause.png`;
+                prow.src = "../assets/images/instruments/notes/empty.png";
         } else if (e.key == "6") {
             let rrow = bar.children[7+2];
             let note = rrow.children[indexOfNote]
 
-            note.src = `images/notes/empty.png`;
+            note.src = `../assets/images/instruments/notes/empty.png`;
 
             let p = true;
             for (let i = 0; i < 8; i++) {
@@ -557,12 +557,12 @@ function delNote() {
 
             let prow = bar.children[7];
             if (p)
-                prow.children[indexOfNote].src = `images/notes/${2**prow.dataset.value.split(" ")[indexOfNote]}pause.png`;
+                prow.children[indexOfNote].src = `../assets/images/instruments/notes/${2**prow.dataset.value.split(" ")[indexOfNote]}pause.png`;
         } else if (e.key == "7") {
             let rrow = bar.children[6+2];
             let note = rrow.children[indexOfNote]
 
-            note.src = `images/notes/empty.png`;
+            note.src = `../assets/images/instruments/notes/empty.png`;
 
             let p = true;
             for (let i = 0; i < 8; i++) {
@@ -574,12 +574,12 @@ function delNote() {
 
             let prow = bar.children[7];
             if (p)
-                prow.children[indexOfNote].src = `images/notes/${2**prow.dataset.value.split(" ")[indexOfNote]}pause.png`;
+                prow.children[indexOfNote].src = `../assets/images/instruments/notes/${2**prow.dataset.value.split(" ")[indexOfNote]}pause.png`;
         } else if (e.key == "8") {
             let rrow = bar.children[5+2];
             let note = rrow.children[indexOfNote]
 
-            note.src = `images/notes/empty.png`;
+            note.src = `../assets/images/instruments/notes/empty.png`;
 
             let p = true;
             for (let i = 0; i < 8; i++) {
@@ -591,12 +591,12 @@ function delNote() {
 
             let prow = bar.children[7];
             if (p)
-                prow.children[indexOfNote].src = `images/notes/${2**prow.dataset.value.split(" ")[indexOfNote]}pause.png`;
+                prow.children[indexOfNote].src = `../assets/images/instruments/notes/${2**prow.dataset.value.split(" ")[indexOfNote]}pause.png`;
         } else if (e.key == "9") {
             let rrow = bar.children[4+2];
             let note = rrow.children[indexOfNote]
 
-            note.src = `images/notes/empty.png`;
+            note.src = `../assets/images/instruments/notes/empty.png`;
 
             let p = true;
             for (let i = 0; i < 8; i++) {
@@ -608,12 +608,12 @@ function delNote() {
 
             let prow = bar.children[7];
             if (p)
-                prow.children[indexOfNote].src = `images/notes/${2**prow.dataset.value.split(" ")[indexOfNote]}pause.png`;
+                prow.children[indexOfNote].src = `../assets/images/instruments/notes/${2**prow.dataset.value.split(" ")[indexOfNote]}pause.png`;
         } else if (e.key == "-") {
             let rrow = bar.children[3+2];
             let note = rrow.children[indexOfNote]
 
-            note.src = `images/notes/empty.png`;
+            note.src = `../assets/images/instruments/notes/empty.png`;
 
             let p = true;
             for (let i = 0; i < 8; i++) {
@@ -625,12 +625,12 @@ function delNote() {
 
             let prow = bar.children[7];
             if (p)
-                prow.children[indexOfNote].src = `images/notes/${2**prow.dataset.value.split(" ")[indexOfNote]}pause.png`;
+                prow.children[indexOfNote].src = `../assets/images/instruments/notes/${2**prow.dataset.value.split(" ")[indexOfNote]}pause.png`;
         } else if (e.key == "=") {
             let rrow = bar.children[2];
             let note = rrow.children[indexOfNote]
 
-            note.src = `images/notes/empty.png`;
+            note.src = `../assets/images/instruments/notes/empty.png`;
 
             let p = true;
             for (let i = 0; i < 8; i++) {
@@ -642,7 +642,7 @@ function delNote() {
 
             let prow = bar.children[7];
             if (p)
-                prow.children[indexOfNote].src = `images/notes/${2**prow.dataset.value.split(" ")[indexOfNote]}pause.png`;
+                prow.children[indexOfNote].src = `../assets/images/instruments/notes/${2**prow.dataset.value.split(" ")[indexOfNote]}pause.png`;
         }
 
         clue.style.display = "none";
@@ -816,13 +816,13 @@ function play() {
             note.style.border = "";
         });
 
-        document.getElementById("imgBPlay").src = "images/play.png";
+        document.getElementById("imgBPlay").src = "../assets/images/instruments/play.png";
 
         return;
     }
     isPlaying = true;
     
-    document.getElementById("imgBPlay").src = "images/stop.png";
+    document.getElementById("imgBPlay").src = "../assets/images/instruments/stop.png";
 
     let bpm = parseInt(document.getElementById("tempo").value) || 120;
     let quarterNoteTime = 60000 / bpm;
@@ -957,7 +957,7 @@ function play() {
     }
     playingTimeOut.push(setTimeout(() => {
         isPlaying = false;
-        document.getElementById("imgBPlay").src = "images/play.png";
+        document.getElementById("imgBPlay").src = "../assets/images/instruments/play.png";
     }, currentTime));
 }
 
@@ -1008,7 +1008,7 @@ function insertAtIndex(str, substring, index) {
   return str.slice(0, index) + substring + str.slice(index);
 }
 function playAudioDrum(name, note) {
-    var audio = new Audio(`audio/drums/${name}.flac`);
+    var audio = new Audio(`../assets/audio/instruments/drums/${name}.flac`);
     audio.play();
 
     if (note) {
@@ -1016,3 +1016,23 @@ function playAudioDrum(name, note) {
         return note;
     }
 }
+export {
+  createDrums,
+  addBar,
+  noteMenuSplit,
+  noteMenuMerge,
+  addNote,
+  delNote,
+  duplicateBar,
+  deleteBar,
+  rightBar,
+  leftBar,
+  startOfRepeat,
+  endOfRepeat,
+  confirmRepeat,
+  cancelRepeat,
+  play,
+  sigTop,
+  sigBottom,
+  playAudioDrum
+};

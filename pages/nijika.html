@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <title>НИДЖИКА</title>
-    <link rel="stylesheet" href="../css/main.css">
-    <link rel="stylesheet" href="../css/menu.css">
-    <link rel="stylesheet" href="../css/novel.css">
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/components/sidebar.css">
+    <link rel="stylesheet" href="../css/components/novel.css">
     <link rel="icon" href="../assets/images/logo.png" type="image/png">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/MTLLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        window.modelsLoadedPromise = new Promise((resolve) => {
+        window.modelsLoadedPromise = new Promise(resolve => {
             window.resolveModelsLoaded = resolve;
         });
     </script>
@@ -36,8 +37,8 @@
             <a class="sidebar-link" href="../index.html">🏠 Главная</a>
             <a class="sidebar-link" href="nijika.html">🎸 Ниджика</a>
             <a class="sidebar-link" href="kaede.html">🎹 Каэде</a>
-            <a class="sidebar-link" onclick="showPopup()">ℹ️ Инфо</a>
-            <a class="sidebar-link" onclick="showFeedbackModal()">💬 Обратная связь</a>
+            <a class="sidebar-link" data-action="show-popup">ℹ️ Инфо</a>
+            <a class="sidebar-link" data-action="show-feedback">💬 Обратная связь</a>
             <div class="search-container">
                 <input type="text" id="searchInput" class="search-input" placeholder="🔍 Поиск инструментов...">
                 <div id="searchDropdown" class="search-dropdown"></div>
@@ -45,10 +46,10 @@
         </nav>
         <div class="sidebar-music">
             <div class="music-row">
-                <button id="musicButton" class="music-btn" onclick="toggleMusic()">🎵</button>
+                <button class="music-btn" data-music-toggle>🎵</button>
                 <span>Музыка</span>
             </div>
-            <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="30" oninput="setVolume(this.value)">
+            <input type="range" class="volume-slider" min="0" max="100" value="30" data-volume>
         </div>
     </div>
 
@@ -56,57 +57,6 @@
         <source src="../assets/audio/music/to_live_is_to_die.opus" type="audio/mpeg">
     </audio>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="../js/main.js"></script>
-    <script src="../js/menu.js"></script>
-    <script src="../js/nijika-scene.js"></script>
-    <script src="../js/resource-loader.js"></script>
-    <script>
-        (function() {
-            const loadingScreen = document.getElementById('loadingScreen');
-            const startTime = Date.now();
-            const minDisplayTime = 500;
-
-            function hideLoadingScreen() {
-                const elapsed = Date.now() - startTime;
-                const remaining = Math.max(0, minDisplayTime - elapsed);
-                setTimeout(() => {
-                    loadingScreen.classList.add('hidden');
-                    setTimeout(() => {
-                        if (loadingScreen.parentNode) loadingScreen.remove();
-                    }, 500);
-                }, remaining);
-            }
-
-            const nijikaResources = [
-                '../assets/images/sprites/nijika/extremeJoy.webp',
-                '../assets/images/sprites/nijika/fury.webp',
-                '../assets/images/sprites/nijika/hf.webp',
-                '../assets/images/sprites/nijika/indifference.webp',
-                '../assets/images/sprites/nijika/joy.webp',
-                '../assets/images/sprites/nijika/legendary.jpg.webp',
-                '../assets/images/sprites/nijika/misunderstanding.webp',
-                '../assets/images/sprites/nijika/relaxation.webp',
-                '../assets/images/sprites/nijika/request.webp',
-                '../assets/images/sprites/nijika/resentment.webp',
-                '../assets/images/sprites/nijika/sadness.webp',
-                '../assets/images/sprites/nijika/trueHappiness.webp',
-                '../assets/audio/music/to_live_is_to_die.opus'
-            ];
-
-            if (window.modelsLoadedPromise) {
-                Promise.all([
-                    window.modelsLoadedPromise,
-                    loadResources(nijikaResources)
-                ]).then(hideLoadingScreen);
-            } else {
-                loadResources(nijikaResources).then(hideLoadingScreen);
-            }
-        })();
-    </script>
-    <script src="../js/novel.js"></script>
-    <script src="../js/dialogs.js"></script>
-    <script src="../js/auth.js"></script>
-    <script src="../js/rotate.js"></script>
+    <script type="module" src="../js/pages/nijika-page.js"></script>
 </body>
 </html>

@@ -10,7 +10,7 @@
 
 Продакшн: [https://nijede.gapkala.ru](https://nijede.gapkala.ru)
 
-Бэкенд развёрнут на собственном сервере (Node.js/express + MySQL/knex), фронтенд раздаётся тем же доменом.
+Бэкенд развёрнут на собственном сервере (Node.js + Express + MySQL + Knex), фронтенд раздаётся тем же доменом.
 
 ## Скриншоты
 
@@ -42,13 +42,13 @@
 
 ## Установка и запуск
 
-Проект состоит из **фронтенда (статика)** и **бэкенда (Node.js + MySQL)**. Они лежат в одном репозитории.
+Проект состоит из **фронтенда (статика)** и **бэкенда (Node.js + MySQL)**. Оба лежат в одном репозитории.
 
 ### 1. Клонирование
 
 ```bash
 git clone https://github.com/KaedeCode/Nijede.git
-cd music-world
+cd Nijede
 ```
 
 ### 2. Бэкенд
@@ -58,7 +58,7 @@ cd backend
 npm install
 ```
 
-Создай `backend/.env` на основе примера:
+Создай `backend/.env`:
 
 ```env
 PORT=3000
@@ -96,9 +96,9 @@ python -m http.server 5500
 
 Открываем `http://localhost:5500`.
 
-`API_BASE` в `js/main.js` и `js/auth.js` определяется автоматически: на `localhost` — `http://localhost:3000/api`, иначе — `/api` (same-origin).
+`API_BASE` в `js/core/config.js` определяется автоматически: на `localhost` — `http://localhost:3000/api`, иначе — `/api` (same-origin).
 
-### 4. Продакшн-деплой (как у нас)
+### 4. Продакшн-деплой
 
 - Фронт и бэк живут на одном домене (`https://nijede.gapkala.ru`).
 - Express раздаёт `/api/*`, статику можно отдать через nginx или тот же Express.
@@ -149,23 +149,53 @@ python -m http.server 5500
 
 ## Архитектура проекта
 
-Фронтенд — чистый ES6 + Three.js r128 + Web Audio API. Бэкенд — Express 5 + Knex + MySQL + express-session.
+Фронтенд — чистый ES6-модуль + Three.js r128 + Web Audio API. Бэкенд — Express 5 + Knex + MySQL + express-session.
 
 ### Фронтенд
 
+**`js/core/`** — базовый слой без привязки к конкретной странице.
+
 | Файл | Назначение |
 |------|-----------|
-| `js/main.js` | Точка входа: музыка, поиск, модалка «О проекте», обратная связь, `API_BASE`. |
-| `js/menu.js` | Боковое меню, поиск по инструментам. |
-| `js/auth.js` | Регистрация/вход/выход, `localStorage`-сессия, рендер UI профиля в шапке и сайдбаре. |
-| `js/novel.js` | Движок новеллы: очередь реплик, спрайты, выборы, аудио-вставки, typewriter. |
-| `js/dialogs.js` | Дерево диалогов для всех интерактивных объектов. |
-| `js/kaede-scene.js` | 3D-сцена комнаты Каэде: загрузка OBJ/MTL, свет, тени, hover, контекстное меню. |
-| `js/nijika-scene.js` | То же для комнаты Ниджики. |
-| `js/resource-loader.js` | Предзагрузка изображений и аудио. |
-| `js/rotate.js` | Оверлей «поверни телефон» для портретной ориентации. |
-| `pages/instruments/js/audio.js` | Редактор мелодических инструментов: клавиатура, такты, ноты, воспроизведение. |
-| `pages/instruments/js/drumsAudio.js` | Редактор ударных: нотоносец с 8 рядами, выбор инструмента по клавишам. |
+| `config.js` | `API_BASE`, `SECTIONS`, `PROJECT_ROOT`, `INSTRUMENTS`, `SEARCH_DATA`. |
+| `api.js` | Обёртка над `fetch` с `credentials: 'include'` и авто-заголовками. |
+| `dom.js` | Хелперы: `escapeHtml`, `$`, `$$`. |
+| `resource-loader.js` | Предзагрузка изображений и аудио через `Promise.allSettled`. |
+
+**`js/features/`** — функциональные модули, переиспользуемые на страницах.
+
+| Файл | Назначение |
+|------|-----------|
+| `auth/auth.js` | Регистрация/вход/выход, `localStorage`-сессия, рендер UI профиля в шапке и сайдбаре, `getAuth()`-синглтон. |
+| `novel/novel.js` | Движок новеллы: очередь реплик, спрайты, выборы, аудио-вставки, typewriter, `getNovel()`-синглтон. |
+| `novel/dialogs.js` | Дерево диалогов для всех интерактивных объектов (`DIALOGS_MAP`). |
+| `scene/kaede.js` | 3D-сцена комнаты Каэде: загрузка OBJ/MTL, свет, тени, hover, контекстное меню. |
+| `scene/nijika.js` | То же для комнаты Ниджики + карта `MODEL_SLUG_MAP` для `guiter → guitar`. |
+| `menu.js` | Боковое меню: открытие/закрытие, инжект блока авторизации. |
+| `music.js` | Управление фоновым аудио и громкостью через `[data-music-toggle]` и `[data-volume]`. |
+| `search.js` | Поиск по `SEARCH_DATA` с группировкой по категориям. |
+| `nav.js` | Навигация по секциям главной страницы (стрелки, W/S). |
+| `popup.js` | Модалка «О проекте» через SweetAlert2. |
+| `feedback.js` | Модалка обратной связи + POST `/api/feedback`. |
+| `actions.js` | Единый биндер `[data-action="show-popup"]` и `[data-action="show-feedback"]`. |
+| `rotate.js` | Оверлей «поверни телефон» для портретной ориентации. |
+
+**`js/instruments/`** — редакторы.
+
+| Файл | Назначение |
+|------|-----------|
+| `melodic.js` | Мелодический редактор: клавиатура, такты, ноты, лиги, репризы, воспроизведение. |
+| `drums.js` | Редактор ударных: нотоносец с 8 рядами, выбор инструмента по клавишам. |
+
+**`js/pages/`** — тонкие точки входа, инициализируют нужные фичи под конкретную страницу.
+
+| Файл | Страница |
+|------|----------|
+| `landing.js` | `index.html` |
+| `kaede-page.js` | `pages/kaede.html` |
+| `nijika-page.js` | `pages/nijika.html` |
+| `profile-page.js` | `pages/profile.html` |
+| `instrument-page.js` | `pages/instrument.html` — диспатчер по `?slug=`, определяет мелодический/ударный редактор, тему и preloader. |
 
 ### Бэкенд (`backend/`)
 
@@ -186,10 +216,11 @@ python -m http.server 5500
 
 ### Взаимодействие модулей
 
-- **3D → диалоги.** Клик по объекту → `handleObjectInteraction` → `window.novel.show(DIALOGS_MAP[objectName][action])`.
-- **Редактор → звук.** `audio.js` использует один сэмпл `C4_<instrument>.flac` и меняет `playbackRate` для транспонирования; `drumsAudio.js` играет готовые FLAC-сэмплы.
+- **3D → диалоги.** Клик по объекту → `handleObjectInteraction` → `getNovel().show(DIALOGS_MAP[objectName][action])`.
+- **3D → редактор.** «Поиграть» → `instrument.html?slug=<name>`, где `slug` совпадает с ключом в `INSTRUMENTS`.
+- **Редактор → звук.** `melodic.js` использует один сэмпл `C4_<instrument>.flac` и меняет `playbackRate` для транспонирования; `drums.js` играет готовые FLAC-сэмплы.
 - **Auth.** `auth.js` общается с `/api/*` через `fetch` с `credentials: 'include'`, состояние хранит в `localStorage` (`auth_current_user`) и валидирует через `GET /api/profile`.
-- **Обратная связь.** `main.js` → `POST /api/feedback` с `credentials: 'include'` (если юзер залогинен, `user_id` проставится автоматически).
+- **Обратная связь.** `feedback.js` → `POST /api/feedback` с `credentials: 'include'` (если юзер залогинен, `user_id` проставится автоматически).
 
 ## Структура проекта
 
@@ -197,15 +228,21 @@ python -m http.server 5500
 .
 ├── assets/
 │   ├── audio/
+│   │   ├── instruments/          # C4_*.flac + drums/*.flac
 │   │   ├── kaede_room/           # демо-звуки из диалогов Каэде
 │   │   ├── music/                # фоновая музыка комнат
 │   │   └── nijika_room/          # треки из диалогов Ниджики
 │   ├── images/
-│   │   ├── kaede.png, nijika.png, logo.png, note_bg.png, lightning_bg.png
+│   │   ├── instruments/          # play/stop, barOfStaff, drums.png, notes/, stems/
 │   │   ├── kaede_room/           # иллюстрации для диалогов
-│   │   └── sprites/
-│   │       ├── kaede/            # спрайты Каэде (.webp)
-│   │       └── nijika/           # спрайты Ниджики (.webp)
+│   │   ├── sprites/
+│   │   │   ├── kaede/            # спрайты Каэде (.webp)
+│   │   │   └── nijika/           # спрайты Ниджики (.webp)
+│   │   ├── kaede.png
+│   │   ├── nijika.png
+│   │   ├── logo.png
+│   │   ├── note_bg.png
+│   │   └── lightning_bg.png
 │   └── models/
 │       ├── kaede/                # .obj/.mtl + textures
 │       └── nijika/               # .obj/.mtl + textures
@@ -214,6 +251,7 @@ python -m http.server 5500
 │   ├── db.js
 │   ├── knexfile.js
 │   ├── package.json
+│   ├── package-lock.json
 │   ├── .env                      # НЕ коммитить
 │   ├── controllers/
 │   ├── middleware/
@@ -222,34 +260,54 @@ python -m http.server 5500
 │   ├── routes/
 │   └── uploads/avatars/          # загруженные аватары (gitignore)
 ├── css/
-│   ├── main.css
-│   ├── menu.css
-│   └── novel.css
+│   ├── base.css                  # reset, общие стили, главная, контекстное меню, auth-модалки
+│   ├── components/
+│   │   ├── novel.css
+│   │   └── sidebar.css
+│   ├── pages/
+│   │   ├── instrument-drums.css
+│   │   ├── instrument-kaede.css
+│   │   ├── instrument-nijika.css
+│   │   └── profile.css
+│   └── themes/                   # зарезервировано под темы
 ├── js/
-│   ├── auth.js
-│   ├── dialogs.js
-│   ├── kaede-scene.js
-│   ├── main.js
-│   ├── menu.js
-│   ├── nijika-scene.js
-│   ├── novel.js
-│   ├── resource-loader.js
-│   └── rotate.js
-├── pages/
+│   ├── core/
+│   │   ├── api.js
+│   │   ├── config.js
+│   │   ├── dom.js
+│   │   └── resource-loader.js
+│   ├── features/
+│   │   ├── actions.js
+│   │   ├── auth/auth.js
+│   │   ├── feedback.js
+│   │   ├── menu.js
+│   │   ├── music.js
+│   │   ├── nav.js
+│   │   ├── novel/
+│   │   │   ├── dialogs.js
+│   │   │   └── novel.js
+│   │   ├── popup.js
+│   │   ├── rotate.js
+│   │   ├── scene/
+│   │   │   ├── kaede.js
+│   │   │   └── nijika.js
+│   │   └── search.js
 │   ├── instruments/
-│   │   ├── acoustic.html, bass.html, drums.html, flute.html,
-│   │   ├── guitar.html, piano.html, synthesizer.html, violin.html
-│   │   ├── audioK.css, audioN.css
-│   │   ├── audio/                # C4_*.flac + drums/*.flac
-│   │   ├── images/               # play/stop, barOfStaff, notes/, stems/
-│   │   └── js/
-│   │       ├── audio.js
-│   │       └── drumsAudio.js
+│   │   ├── drums.js
+│   │   └── melodic.js
+│   └── pages/
+│       ├── instrument-page.js
+│       ├── kaede-page.js
+│       ├── landing.js
+│       ├── nijika-page.js
+│       └── profile-page.js
+├── pages/
+│   ├── instrument.html
 │   ├── kaede.html
-│   └── nijika.html
+│   ├── nijika.html
+│   └── profile.html
 ├── screenshots/
 ├── index.html
-├── profile.html
 ├── LICENSE
 └── README.md
 ```
@@ -259,7 +317,7 @@ python -m http.server 5500
 ### Фронтенд
 
 - **HTML5 / CSS3** — тёмная тема, анимации, glassmorphism.
-- **Vanilla JS (ES6)** — без сборщиков и фреймворков.
+- **Vanilla JS (ES6-модули)** — без сборщиков и фреймворков.
 - **Three.js r128** + `OBJLoader`, `MTLLoader` — 3D-сцены, тени (PCFSoft), raycast.
 - **Web Audio API** — воспроизведение нот, транспонирование через `playbackRate`.
 - **SweetAlert2** — модалки (инфо, обратная связь, подтверждения).
@@ -278,7 +336,7 @@ python -m http.server 5500
 
 ## Системные требования
 
-- **Браузер**: Chrome / Firefox / Edge / Safari последних версий с WebGL и Web Audio API.
+- **Браузер**: Chrome / Firefox / Edge / Safari последних версий с поддержкой ES-модулей, WebGL и Web Audio API.
 - **Node.js**: ≥ 18 (для `sharp` и Express 5).
 - **MySQL**: 8.x (или MariaDB 10.6+).
 - **ОЗУ**: от 2 ГБ для комфортной работы 3D.
@@ -289,6 +347,7 @@ python -m http.server 5500
 - **Модели грузятся целиком в первый заход.** При медленном канале первая загрузка комнаты может занять 10–20 секунд — показывается спиннер с подсказкой.
 - **Аудио — FLAC/Opus.** FLAC используется для коротких сэмплов нот (высокое качество важно для `playbackRate`), Opus — для музыки и речи.
 - **Спрайты — WebP.** Поддерживаются всеми актуальными браузерами.
+- **ES-модули требуют HTTP.** Страницы не откроются через `file://` — нужен любой локальный сервер (`python -m http.server`, `live-server` и т.п.).
 
 ## Атрибуция и лицензии материалов
 
@@ -325,7 +384,7 @@ python -m http.server 5500
 
 ## Авторы
 
-- **Александр Фролякин** — 3D-сцены, novel-движок, комната Каэде, auth + feedback + profile, интеграция бэкенда.
+- **Александр Фролякин** — 3D-сцены, novel-движок, комната Каэде, auth + feedback + profile, интеграция бэкенда, рефакторинг структуры.
   [GitHub](https://github.com/KaedeCode) · [Telegram](https://t.me/KaedeCode)
 - **Кирилл Житников** — нотный редактор, аудиосистема, комната Ниджики.
   [GitHub](https://github.com/arkin99-p)
@@ -334,27 +393,3 @@ python -m http.server 5500
 
 Проект распространяется под лицензией [MIT](LICENSE).
 3D-модели и звуки взяты из открытых источников — если вы автор какого-либо материала, свяжитесь с нами для указания авторства или удаления.
-```
-
----
-
-## Что я поменял в README
-
-1. **Демо-ссылку** → `nijede.gapkala.ru` (соответствует `.env`).
-2. **`.env`** → привёл к реальным переменным: `DB_PORT`, `DB_SSL`, `UPLOAD_PATH`, без Cloudinary.
-3. **Стек бэкенда** → убрал Cloudinary, добавил **sharp** и локальное хранение аватаров.
-4. **Структуру проекта** → синхронизировал с `tree` (аудио нот в `pages/instruments/audio/`, изображения в `pages/instruments/images/`, `LICENSE` без `.md`, папка `screenshots/`).
-5. **Архитектуру** → добавил разделы про `audio.js`/`drumsAudio.js` в новой структуре, про `keep-alive` в `app.js`, про предзагрузку ресурсов.
-6. **Раздел «Известные особенности»** — добавил честные ограничения (FLAC, WebP, долгая первая загрузка).
-7. **Управление** → оформил таблицами, добавил таблицу для ударных.
-8. **Атрибуцию** → убрал Cloudinary, привёл к фактическим зависимостям из `package.json`.
-
-## Один маленький совет напоследок
-
-Поскольку ты показал `.env` с реальными кредами — **поменяй пароль MySQL и `SESSION_SECRET`** и перезалей `.env` только на сервер. И добавь в `.gitignore` строки:
-
-```
-backend/.env
-backend/uploads/
-node_modules/
-```

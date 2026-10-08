@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <title>КАЭДЕ</title>
-    <link rel="stylesheet" href="../css/main.css">
-    <link rel="stylesheet" href="../css/menu.css">
-    <link rel="stylesheet" href="../css/novel.css">
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/components/sidebar.css">
+    <link rel="stylesheet" href="../css/components/novel.css">
     <link rel="icon" href="../assets/images/logo.png" type="image/png">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/MTLLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        window.modelsLoadedPromise = new Promise((resolve) => {
+        window.modelsLoadedPromise = new Promise(resolve => {
             window.resolveModelsLoaded = resolve;
         });
     </script>
@@ -36,8 +37,8 @@
             <a class="sidebar-link" href="../index.html">🏠 Главная</a>
             <a class="sidebar-link" href="nijika.html">🎸 Ниджика</a>
             <a class="sidebar-link" href="kaede.html">🎹 Каэде</a>
-            <a class="sidebar-link" onclick="showPopup()">ℹ️ Инфо</a>
-            <a class="sidebar-link" onclick="showFeedbackModal()">💬 Обратная связь</a>
+            <a class="sidebar-link" data-action="show-popup">ℹ️ Инфо</a>
+            <a class="sidebar-link" data-action="show-feedback">💬 Обратная связь</a>
             <div class="search-container">
                 <input type="text" id="searchInput" class="search-input" placeholder="🔍 Поиск инструментов...">
                 <div id="searchDropdown" class="search-dropdown"></div>
@@ -45,10 +46,10 @@
         </nav>
         <div class="sidebar-music">
             <div class="music-row">
-                <button id="musicButton" class="music-btn" onclick="toggleMusic()">🎵</button>
+                <button class="music-btn" data-music-toggle>🎵</button>
                 <span>Музыка</span>
             </div>
-            <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="30" oninput="setVolume(this.value)">
+            <input type="range" class="volume-slider" min="0" max="100" value="30" data-volume>
         </div>
     </div>
 
@@ -56,91 +57,6 @@
         <source src="../assets/audio/music/moonlight_sonata.opus" type="audio/mpeg">
     </audio>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="../js/main.js"></script>
-    <script src="../js/menu.js"></script>
-    <script src="../js/kaede-scene.js"></script>
-    <script src="../js/resource-loader.js"></script>
-    <script>
-        (function() {
-            const loadingScreen = document.getElementById('loadingScreen');
-            const startTime = Date.now();
-            const minDisplayTime = 500;
-
-            function hideLoadingScreen() {
-                const elapsed = Date.now() - startTime;
-                const remaining = Math.max(0, minDisplayTime - elapsed);
-                setTimeout(() => {
-                    loadingScreen.classList.add('hidden');
-                    setTimeout(() => {
-                        if (loadingScreen.parentNode) loadingScreen.remove();
-                    }, 500);
-                }, remaining);
-            }
-
-            const kaedeResources = [
-                '../assets/images/sprites/kaede/accuse.webp',
-                '../assets/images/sprites/kaede/afraid.webp',
-                '../assets/images/sprites/kaede/annoyed1.webp',
-                '../assets/images/sprites/kaede/annoyed2.webp',
-                '../assets/images/sprites/kaede/confused.webp',
-                '../assets/images/sprites/kaede/crying.webp',
-                '../assets/images/sprites/kaede/dreaming.webp',
-                '../assets/images/sprites/kaede/explain1.webp',
-                '../assets/images/sprites/kaede/explain2.webp',
-                '../assets/images/sprites/kaede/extremely_surprised.webp',
-                '../assets/images/sprites/kaede/fear.webp',
-                '../assets/images/sprites/kaede/focused.webp',
-                '../assets/images/sprites/kaede/glad.webp',
-                '../assets/images/sprites/kaede/happily_explains.webp',
-                '../assets/images/sprites/kaede/happy.webp',
-                '../assets/images/sprites/kaede/inspiring.webp',
-                '../assets/images/sprites/kaede/recognizing.webp',
-                '../assets/images/sprites/kaede/shy.webp',
-                '../assets/images/sprites/kaede/smiling.webp',
-                '../assets/images/sprites/kaede/thoughtfully_explains.webp',
-                '../assets/images/sprites/kaede/trusts.webp',
-                '../assets/images/sprites/kaede/uncomfortable.webp',
-                '../assets/images/sprites/kaede/very_angry.webp',
-                '../assets/images/sprites/kaede/very_confused.webp',
-                '../assets/images/kaede_room/80s_synth_pop.webp',
-                '../assets/images/kaede_room/chopin_portrait.webp',
-                '../assets/images/kaede_room/cristofori_piano.webp',
-                '../assets/images/kaede_room/daw_interface.webp',
-                '../assets/images/kaede_room/equalizer_graph.webp',
-                '../assets/images/kaede_room/fl_studio_logo.webp',
-                '../assets/images/kaede_room/fm_synthesis_diagram.webp',
-                '../assets/images/kaede_room/gramophone.webp',
-                '../assets/images/kaede_room/harmor_interface.webp',
-                '../assets/images/kaede_room/kandinsky_music.webp',
-                '../assets/images/kaede_room/moog_modular.webp',
-                '../assets/images/kaede_room/music_and_painting.webp',
-                '../assets/images/kaede_room/music_stand.webp',
-                '../assets/images/kaede_room/old_pianist.webp',
-                '../assets/images/kaede_room/piano_mechanism_diagram.webp',
-                '../assets/images/kaede_room/sampler_interface.webp',
-                '../assets/images/kaede_room/saw_wave.webp',
-                '../assets/images/kaede_room/sheet_music.webp',
-                '../assets/images/kaede_room/street_piano.webp',
-                '../assets/images/kaede_room/sunset_painting.webp',
-                '../assets/images/kaede_room/synth_basics.webp',
-                '../assets/images/note_bg.png',
-                '../assets/audio/music/moonlight_sonata.opus'
-            ];
-
-            if (window.modelsLoadedPromise) {
-                Promise.all([
-                    window.modelsLoadedPromise,
-                    loadResources(kaedeResources)
-                ]).then(hideLoadingScreen);
-            } else {
-                loadResources(kaedeResources).then(hideLoadingScreen);
-            }
-        })();
-    </script>
-    <script src="../js/novel.js"></script>
-    <script src="../js/dialogs.js"></script>
-    <script src="../js/auth.js"></script>
-    <script src="../js/rotate.js"></script>
+    <script type="module" src="../js/pages/kaede-page.js"></script>
 </body>
 </html>

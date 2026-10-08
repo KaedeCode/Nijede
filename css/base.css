@@ -212,6 +212,29 @@ html {
     text-shadow: 0 0 15px #9d4edd;
 }
 
+.intro-feedback.bottom-left {
+    position: absolute;
+    bottom: 30px;
+    left: 40px;
+    z-index: 10;
+    background: rgba(10, 10, 18, 0.6);
+    padding: 10px 20px;
+    border-radius: 50px;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.intro-feedback.bottom-left:hover {
+    background: rgba(157, 78, 221, 0.4);
+    transform: translateY(-2px);
+}
+
 .intro-volume-slider {
     width: 90px;
     height: 4px;

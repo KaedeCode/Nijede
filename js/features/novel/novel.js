@@ -1,4 +1,4 @@
-class Novel {
+export class Novel {
     constructor() {
         this.isVisible = false;
         this.dialogs = [];
@@ -289,4 +289,10 @@ class Novel {
     }
 }
 
-window.novel = new Novel();
+
+let instance = null;
+
+export function getNovel() {
+  if (!instance) instance = new Novel();
+  return instance;
+}

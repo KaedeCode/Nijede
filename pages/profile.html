@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой профиль</title>
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/components/sidebar.css">
+    <link rel="stylesheet" href="../css/pages/profile.css">
+    <link rel="icon" href="../assets/images/logo.png" type="image/png">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <div class="burger-button">☰</div>
+
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <span class="sidebar-title">Меню</span>
+            <button class="close-sidebar" aria-label="Закрыть">✕</button>
+        </div>
+        <nav class="sidebar-nav">
+            <a class="sidebar-link" href="../index.html">🏠 Главная</a>
+            <a class="sidebar-link" href="kaede.html">🎹 Каэде</a>
+            <a class="sidebar-link" href="nijika.html">🎸 Ниджика</a>
+            <a class="sidebar-link" data-action="show-popup">ℹ️ Инфо</a>
+            <a class="sidebar-link" data-action="show-feedback">💬 Обратная связь</a>
+            <div class="search-container">
+                <input type="text" id="searchInput" class="search-input" placeholder="🔍 Поиск инструментов...">
+                <div id="searchDropdown" class="search-dropdown"></div>
+            </div>
+        </nav>
+        <div class="sidebar-music">
+            <div class="music-row">
+                <button class="music-btn" data-music-toggle>🎵</button>
+                <span>Музыка</span>
+            </div>
+            <input type="range" class="volume-slider" min="0" max="100" value="30" data-volume>
+        </div>
+    </div>
+
+    <div class="profile-page">
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-avatar-wrapper" id="avatarWrapper">
+                    <img id="profileAvatar" src="" alt="Аватар" style="display:none;">
+                    <div class="avatar-placeholder" id="avatarPlaceholder">?</div>
+                </div>
+                <label for="avatarInput" class="profile-avatar-label">Изменить аватар</label>
+                <input type="file" id="avatarInput" class="profile-avatar-input" accept="image/*">
+                <div class="profile-username" id="profileDisplayName">Пользователь</div>
+            </div>
+
+            <div class="profile-row">
+                <div class="profile-field">
+                    <label for="profileUsernameInput">Имя</label>
+                    <input type="text" id="profileUsernameInput" placeholder="Ваше имя">
+                </div>
+                <div class="profile-field">
+                    <label for="profilePronounsSelect">Местоимения</label>
+                    <select id="profilePronounsSelect">
+                        <option value="">—</option>
+                        <option value="он/его">Он/Его</option>
+                        <option value="она/её">Она/Её</option>
+                        <option value="они/их">Они/Их</option>
+                        <option value="оно/его">Оно/Его</option>
+                    </select>
+                </div>
+                <div class="profile-field">
+                    <label for="profileBirthInput">Дата рождения</label>
+                    <input type="date" id="profileBirthInput">
+                </div>
+            </div>
+
+            <div class="profile-field">
+                <label for="profileBioInput">О себе</label>
+                <textarea id="profileBioInput" placeholder="Расскажите о себе, своих музыкальных предпочтениях..."></textarea>
+            </div>
+
+            <div class="profile-field" style="display: flex; flex-wrap: wrap; gap: 20px;">
+                <div>
+                    <label>Дата регистрации</label>
+                    <div style="padding: 8px 0; color: #aaa;" id="profileCreated">—</div>
+                </div>
+                <div>
+                    <label>ID пользователя</label>
+                    <div style="padding: 8px 0; color: #aaa;" id="profileId">—</div>
+                </div>
+            </div>
+
+            <div class="profile-compositions">
+                <h3>🎵 Мои композиции</h3>
+                <div class="compositions-placeholder">
+                    <span>🎼</span>
+                    <p>Ваши композиции появятся здесь</p>
+                    <p style="font-size: 0.9rem; color: #555;">Скоро вы сможете сохранять свои мелодии</p>
+                </div>
+            </div>
+
+            <div class="profile-actions">
+                <button class="auth-btn back-btn" id="profileBack">Вернуться</button>
+                <div class="action-row">
+                    <button class="auth-btn save-btn" id="profileSave">Сохранить</button>
+                    <button class="auth-btn logout-btn" id="profileLogout">Выйти</button>
+                </div>
+            </div>
+
+            <div id="profileMessage" class="profile-message"></div>
+        </div>
+    </div>
+
+    <script type="module" src="../js/pages/profile-page.js"></script>
+</body>
+</html>

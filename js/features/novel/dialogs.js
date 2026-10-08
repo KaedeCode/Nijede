@@ -1,4 +1,4 @@
-const DIALOGS_MAP = {
+export const DIALOGS_MAP = {
     "kaede_piano": {
         "info": [
             {

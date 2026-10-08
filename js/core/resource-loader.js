@@ -1,4 +1,4 @@
-function loadImage(url) {
+export function loadImage(url) {
     return new Promise((resolve, reject) => {
         const img = new Image();
         img.onload = () => resolve(img);
@@ -7,7 +7,7 @@ function loadImage(url) {
     });
 }
 
-function loadAudio(url) {
+export function loadAudio(url) {
     return new Promise((resolve, reject) => {
         const audio = new Audio();
         audio.preload = 'auto';
@@ -18,7 +18,7 @@ function loadAudio(url) {
     });
 }
 
-function loadResources(urls) {
+export function loadResources(urls) {
     const tasks = urls.map(url => {
         if (url.match(/\.(opus|flac|mp3|wav|ogg)$/i)) {
             return loadAudio(url);
