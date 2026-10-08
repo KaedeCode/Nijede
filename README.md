@@ -47,7 +47,7 @@
 ### 1. Клонирование
 
 ```bash
-git clone https://github.com/kaedecode/music-world.git
+git clone https://github.com/KaedeCode/Nijede.git
 cd music-world
 ```
 
