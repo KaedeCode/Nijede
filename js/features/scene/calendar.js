@@ -1,3 +1,5 @@
+import { API_BASE } from '../../core/config.js';
+
 const MONTHS = [
   'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
   'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
@@ -10,7 +12,7 @@ const PAD = 40;
 const HEADER_H = 110;
 const WEEKDAY_H = 50;
 
-const API_URL = new URL('/backend-php/calendar.php', window.location.origin).href;
+const API_URL = new URL(API_BASE + '/calendar', window.location.origin).href;
 
 function generateLocalMonthData(year, month, theme) {
   const daysInMonth = new Date(year, month, 0).getDate();

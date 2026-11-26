@@ -130,7 +130,7 @@ class Auth {
 
     try {
       const res = await fetch(`${API_BASE}/profile`, {
-        method: 'PUT',
+        method: 'POST',
         credentials: 'include',
         body: formData
       });
