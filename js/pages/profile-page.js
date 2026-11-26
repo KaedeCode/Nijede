@@ -109,7 +109,7 @@ if (!auth.isAuthenticated()) {
     }
 
     saveBtn.disabled = true;
-    saveBtn.textContent = '⏳ Сохранение...';
+    saveBtn.textContent = 'Сохранение...';
 
     const result = await auth.updateProfile(
       newUsername || null,
@@ -120,7 +120,7 @@ if (!auth.isAuthenticated()) {
     );
 
     saveBtn.disabled = false;
-    saveBtn.textContent = '💾 Сохранить';
+    saveBtn.textContent = 'Сохранить';
 
     if (result.success) {
       showMessage('Профиль успешно обновлён!', 'success');

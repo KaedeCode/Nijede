@@ -2,14 +2,14 @@ import { API_BASE } from '../core/config.js';
 
 export function showFeedbackModal() {
   Swal.fire({
-    title: '💬 Обратная связь',
+    title: 'Обратная связь',
     html: `
       <div style="text-align: left; font-family: 'Segoe UI', Arial, sans-serif;">
         <label for="feedbackType" style="display:block; margin-bottom:6px; color:#c77dff; font-weight:500;">Тип отзыва</label>
         <select id="feedbackType" style="width:100%; padding:10px 14px; margin-bottom:18px; border-radius:12px; background:#2a2a3e; color:#fff; border:1.5px solid #6a3a8a; outline:none; font-size:1rem;">
-          <option value="general">📝 Общее</option>
-          <option value="bug">🐞 Сообщить об ошибке</option>
-          <option value="suggestion">💡 Предложение</option>
+          <option value="general">Общее</option>
+          <option value="bug">Сообщить об ошибке</option>
+          <option value="suggestion">Предложение</option>
         </select>
         <label for="feedbackEmail" style="display:block; margin-bottom:6px; color:#c77dff; font-weight:500;">Email (необязательно)</label>
         <input id="feedbackEmail" type="email" style="width:100%; padding:10px 14px; margin-bottom:18px; border-radius:12px; background:#2a2a3e; color:#fff; border:1.5px solid #6a3a8a; outline:none; font-size:1rem;" placeholder="Ваш email">

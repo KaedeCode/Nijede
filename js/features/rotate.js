@@ -9,7 +9,6 @@ function createOverlay() {
   overlay.id = 'rotate-overlay';
   overlay.innerHTML = `
     <div class="rotate-message">
-      <span class="rotate-icon">📱</span>
       <h2>Пожалуйста, переверните телефон</h2>
       <p>Для лучшего просмотра используйте горизонтальную ориентацию.</p>
     </div>
