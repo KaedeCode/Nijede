@@ -10,7 +10,7 @@
 
 Продакшн: [https://nijede.gapkala.ru](https://nijede.gapkala.ru)
 
-Бэкенд развёрнут на собственном сервере (Node.js + Express + MySQL + Knex), фронтенд раздаётся тем же доменом.
+Бэкенд развёрнут на собственном сервере (PHP 8.5 + MariaDB), фронтенд раздаётся тем же доменом.
 
 ## Скриншоты
 
@@ -34,15 +34,15 @@
   - воспроизведение партии через Web Audio API
 - **Поддержка инструментов**: пианино, синтезатор, электрогитара, акустическая гитара, бас-гитара, ударная установка, флейта, скрипка.
 - **Аудиосопровождение** — фоновая музыка в каждой комнате, звуки инструментов, демо-вставки в диалогах.
-- **Аутентификация** — регистрация, вход, выход, сессия в MySQL, хеширование паролей bcrypt.
-- **Профиль пользователя** — имя, аватар (загрузка и обработка через sharp), местоимения, дата рождения, био, дата регистрации, ID.
+- **Аутентификация** — регистрация, вход, выход, PHP-сессия, хеширование паролей `password_hash`.
+- **Профиль пользователя** — имя, аватар (загрузка и обработка через GD: 300×300, WebP), местоимения, дата рождения, био, дата регистрации, ID.
 - **Обратная связь** — модальное окно с типами (общее / ошибка / предложение), запись в БД.
 - **Поиск** по инструментам с группировкой по категориям.
 - **Адаптивный интерфейс** с боковым меню и подсказкой поворота экрана на мобильных.
 
 ## Установка и запуск
 
-Проект состоит из **фронтенда (статика)** и **бэкенда (Node.js + MySQL)**. Оба лежат в одном репозитории.
+Проект состоит из **фронтенда (статика)** и **бэкенда (PHP 8 + MySQL/MariaDB)**. Оба лежат в одном репозитории.
 
 ### 1. Клонирование
 
@@ -53,37 +53,33 @@ cd Nijede
 
 ### 2. Бэкенд
 
+Зависимостей нет — нужны только PHP с расширениями `pdo_mysql`, `gd`, `mbstring` и MySQL/MariaDB.
+
 ```bash
-cd backend
-npm install
+mysql -u root -p -e "CREATE DATABASE nijede CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
+mysql -u root -p nijede < backend/migrations/001_init.sql
+cp backend/.env.example backend/.env
 ```
 
-Создай `backend/.env`:
+В `backend/.env`:
 
 ```env
-PORT=3000
+APP_ENV=dev
+FRONTEND_URL=http://localhost:5500
 DB_HOST=localhost
 DB_PORT=3306
+DB_NAME=nijede
 DB_USER=your_user
 DB_PASSWORD=your_password
-DB_NAME=nijededb
-DB_SSL=false
-SESSION_SECRET=change_me_to_a_long_random_string
-UPLOAD_PATH=./uploads
-FRONTEND_URL=http://localhost:5500
-NODE_ENV=development
 ```
 
-Применяем миграции и запускаем:
+Запуск:
 
 ```bash
-npx knex migrate:latest
-npm start          # прод
-# или
-npm run dev        # с nodemon
+php -S 127.0.0.1:3000 -t backend/public backend/public/index.php
 ```
 
-Сервер поднимется на `http://localhost:3000`. Загруженные аватары будут лежать в `backend/uploads/avatars`.
+Сервер поднимется на `http://localhost:3000`. Загруженные аватары будут лежать в `backend/storage/avatars`.
 
 ### 3. Фронтенд
 
@@ -101,9 +97,9 @@ python -m http.server 5500
 ### 4. Продакшн-деплой
 
 - Фронт и бэк живут на одном домене (`https://nijede.gapkala.ru`).
-- Express раздаёт `/api/*`, статику можно отдать через nginx или тот же Express.
-- В `.env` ставим `NODE_ENV=production`, `FRONTEND_URL=https://nijede.gapkala.ru`. Сессионная кука автоматически станет `secure` + `SameSite=None`.
-- Миграции применяются автоматически через `postinstall` (`knex migrate:latest --env production`).
+- nginx раздаёт статику из корня репозитория, `/api/*` уходит в PHP-FPM (`backend/public/index.php`), `/uploads/` — из `backend/storage`.
+- В `.env` ставим `APP_ENV=production`. Сессионная кука автоматически станет `secure`.
+- Схема применяется один раз: `mysql nijede < backend/migrations/001_init.sql`.
 
 ## Управление
 
@@ -149,7 +145,7 @@ python -m http.server 5500
 
 ## Архитектура проекта
 
-Фронтенд — чистый ES6-модуль + Three.js r128 + Web Audio API. Бэкенд — Express 5 + Knex + MySQL + express-session.
+Фронтенд — чистый ES6-модуль + Three.js r128 + Web Audio API. Бэкенд — PHP без зависимостей, PDO + MySQL, PHP-сессии.
 
 ### Фронтенд
 
@@ -201,18 +197,15 @@ python -m http.server 5500
 
 | Файл | Назначение |
 |------|-----------|
-| `app.js` | Express: CORS, helmet, сессии (MySQL store), роуты, keep-alive ping к БД. |
-| `db.js`, `knexfile.js` | Подключение к MySQL через Knex. |
-| `routes/auth.js` | `/api/register`, `/api/login`, `/api/logout`, `/api/profile` (GET). |
-| `routes/profile.js` | `/api/profile` (PUT) с загрузкой аватара. |
-| `routes/feedback.js` | `/api/feedback` (POST) с валидацией. |
-| `controllers/authController.js` | Логика регистрации/входа/выхода, bcrypt, сохранение сессии. |
-| `controllers/profileController.js` | Обновление профиля, обработка аватара через **sharp** (ресайз 300×300, WebP, поддержка анимированных GIF), запись в `uploads/avatars`. |
-| `controllers/feedbackController.js` | Сохранение отзывов в БД. |
-| `models/User.js`, `models/Feedback.js` | Модели поверх Knex. |
-| `middleware/auth.js` | Проверка `req.session.userId`. |
-| `middleware/upload.js` | Multer в памяти + фильтр по MIME (jpeg/png/webp/gif, до 20 МБ). |
-| `migrations/*` | Схема `users` и `feedback`. |
+| `config.php` | `.env`, автозагрузчик `App\`, PDO-подключение. |
+| `public/index.php` | Маршруты `/api/*`, сессия, CORS в dev. |
+| `src/Router.php` | Минимальный роутер с обработкой ошибок. |
+| `src/Json.php` | JSON-ответы и чтение тела запроса. |
+| `src/Auth.php`, `src/Validator.php` | Проверка сессии и валидация полей. |
+| `src/Controllers/` | `AuthController`, `ProfileController`, `FeedbackController`, `CalendarController`. |
+| `src/Models/` | `User`, `Feedback` — запросы через PDO. |
+| `migrations/001_init.sql` | Схема `users` и `feedback`. |
+| `storage/avatars/` | Загруженные аватары (gitignore). |
 
 ### Взаимодействие модулей
 
@@ -247,18 +240,18 @@ python -m http.server 5500
 │       ├── kaede/                # .obj/.mtl + textures
 │       └── nijika/               # .obj/.mtl + textures
 ├── backend/
-│   ├── app.js
-│   ├── db.js
-│   ├── knexfile.js
-│   ├── package.json
-│   ├── package-lock.json
-│   ├── .env                      # НЕ коммитить
-│   ├── controllers/
-│   ├── middleware/
-│   ├── migrations/
-│   ├── models/
-│   ├── routes/
-│   └── uploads/avatars/          # загруженные аватары (gitignore)
+│   ├── config.php
+│   ├── .env.example
+│   ├── public/index.php
+│   ├── src/
+│   │   ├── Controllers/
+│   │   ├── Models/
+│   │   ├── Auth.php
+│   │   ├── Json.php
+│   │   ├── Router.php
+│   │   └── Validator.php
+│   ├── migrations/001_init.sql
+│   └── storage/avatars/         # загруженные аватары (gitignore)
 ├── css/
 │   ├── base.css                  # reset, общие стили, главная, контекстное меню, auth-модалки
 │   ├── components/
@@ -324,20 +317,16 @@ python -m http.server 5500
 
 ### Бэкенд
 
-- **Node.js + Express 5**
-- **MySQL** + **Knex.js** (миграции и запросы)
-- **express-session** + **express-mysql-session** — сессии в БД
-- **bcrypt** — хеширование паролей
-- **sharp** — ресайз и конвертация аватаров в WebP (в т.ч. анимированных)
-- **multer** — приём файлов в память (лимит 20 МБ)
-- **express-validator** — валидация тел запросов
-- **helmet**, **cors** — базовая безопасность
-- **dotenv** — конфигурация
+- **PHP 8.5** — без зависимостей и сборщиков
+- **MySQL** / **MariaDB** + **PDO** — данные и схема
+- **PHP-сессии** — авторизация
+- **`password_hash` / `password_verify`** — пароли (bcrypt)
+- **GD** — ресайз 300×300 и конвертация аватаров в WebP
 
 ## Системные требования
 
 - **Браузер**: Chrome / Firefox / Edge / Safari последних версий с поддержкой ES-модулей, WebGL и Web Audio API.
-- **Node.js**: ≥ 18 (для `sharp` и Express 5).
+- **PHP**: ≥ 8.5 с расширениями `pdo_mysql`, `gd`, `mbstring`, `fileinfo`.
 - **MySQL**: 8.x (или MariaDB 10.6+).
 - **ОЗУ**: от 2 ГБ для комфортной работы 3D.
 - **Интернет**: нужен для загрузки моделей, аудио и CDN-библиотек.
@@ -354,10 +343,6 @@ python -m http.server 5500
 ### Библиотеки
 - [Three.js](https://github.com/mrdoob/three.js) — MIT
 - [SweetAlert2](https://github.com/sweetalert2/sweetalert2) — MIT
-- [Express](https://expressjs.com/) — MIT
-- [Knex.js](https://knexjs.org/) — MIT
-- [bcrypt](https://github.com/kelektiv/node.bcrypt.js) — MIT
-- [sharp](https://sharp.pixelplumbing.com/) — Apache-2.0
 
 ### 3D-модели
 Трёхмерные модели (комнаты, мебель, инструменты) загружены с **Sketchfab** в рамках бесплатных общедоступных моделей. К сожалению, информация об авторах не сохранилась. Если вы автор модели, использованной в проекте, — свяжитесь с нами, мы добавим ваше имя или удалим модель.
